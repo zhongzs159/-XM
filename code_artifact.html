@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator's Vibe - 个人创意空间</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brutalistCoral: '#FF5F7E',
+                        brutalistBlue: '#3B82F6',
+                        brutalistYellow: '#FFD043',
+                        brutalistPurple: '#8B5CF6',
+                        brutalistGreen: '#10B981',
+                        brutalistOrange: '#FF823A',
+                        brutalistCream: '#F8F6F0',
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        comfortaa: ['"Comfortaa"', 'cursive'],
+                    },
+                    boxShadow: {
+                        'brutal': '4px 4px 0px 0px #000000',
+                        'brutal-lg': '8px 8px 0px 0px #000000',
+                        'brutal-xl': '12px 12px 0px 0px #000000',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FAF9F6;
+        }
+        /* Custom Neo-Brutalism Components */
+        .brutal-card {
+            border: 4px solid #000000;
+            box-shadow: 6px 6px 0px 0px #000000;
+            border-radius: 24px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .brutal-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px 0px #000000;
+        }
+        .brutal-btn-primary {
+            border: 3px solid #000000;
+            background-color: #000000;
+            color: #ffffff;
+            box-shadow: 4px 4px 0px 0px #000000;
+            border-radius: 12px;
+            transition: all 0.15s ease;
+        }
+        .brutal-btn-primary:hover {
+            background-color: #FF5F7E;
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px 0px #000000;
+        }
+        .brutal-btn-secondary {
+            border: 3px solid #000000;
+            background-color: #ffffff;
+            color: #000000;
+            box-shadow: 4px 4px 0px 0px #000000;
+            border-radius: 12px;
+            transition: all 0.15s ease;
+        }
+        .brutal-btn-secondary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px 0px #000000;
+        }
+        /* Tab switching animation transition */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* 高亮标签的高级交互效果 */
+        .brutal-highlight {
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform-origin: center center;
+        }
+        .brutal-highlight:hover {
+            transform: scale(1.08);
+            filter: brightness(1.1);
+            box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.3);
+        }
+        /* 针对不同颜色的特定旋转方向增强 */
+        .bg-brutalistCoral.brutal-highlight:hover {
+            transform: rotate(-4deg) scale(1.08);
+        }
+        .bg-brutalistPurple.brutal-highlight:hover {
+            transform: rotate(5deg) scale(1.08);
+        }
+        .bg-brutalistBlue.brutal-highlight:hover {
+            transform: rotate(-3deg) scale(1.08);
+        }
+        .bg-brutalistYellow.brutal-highlight:hover {
+            transform: rotate(-2deg) scale(1.08);
+        }
+        /* 统一的任务标签交互效果 - 让珊瑚色和绿色使用相同的旋转 */
+        .bg-brutalistCoral.brutal-highlight:hover {
+            transform: rotate(-3deg) scale(1.08);
+        }
+        .bg-brutalistGreen.brutal-highlight:hover {
+            transform: rotate(-3deg) scale(1.08);
+        }
+        /* 导航按钮交互效果 */
+        .nav-tab {
+            transition: all 0.2s ease;
+        }
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            border-color: #000000 !important;
+            box-shadow: 2px 2px 0px 0px #000000;
+        }
+        .nav-tab:not(.active-tab):hover {
+            color: #1a1a1a !important;
+            background-color: #f0f0f0 !important;
+        }
+        /* ID卡片斜转交互效果 */
+        .card-tilt {
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        .card-tilt:hover {
+            transform: rotate(-5deg) scale(1.02);
+            box-shadow: 10px 10px 0px 0px #000000;
+        }
+        /* 时间线卡片高级交互效果 */
+        .timeline-card {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform-origin: center bottom;
+        }
+        .timeline-card:hover {
+            transform: translateY(-2px) scale(1.02);
+        }
+        /* 时间线流动动画 */
+        .timeline-line {
+            position: relative;
+        }
+        .timeline-line::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(to bottom, rgba(59, 130, 246, 0.8), transparent);
+            border-radius: 2px;
+            animation: flowUp 3s ease-in-out infinite;
+        }
+        @keyframes flowUp {
+            0% {
+                transform: translateX(-50%) translateY(100vh);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-50%) translateY(-20px);
+                opacity: 0;
+            }
+        }
+        /* 时间线节点按钮式交互 */
+        .timeline-node {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .timeline-node:hover {
+            transform: translateX(-50%) scale(1.08);
+        }
+    </style>
+</head>
+<body class="text-black overflow-x-hidden">
+
+    <!-- 顶栏导航 (Reference to image_0.png) -->
+    <header class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-4xl">
+        <nav class="bg-white border-[4px] border-black rounded-full px-6 py-3 flex items-center justify-center shadow-[6px_6px_0px_0px_#000]">
+            <!-- TABS NAVIGATION -->
+            <div class="flex items-center gap-1 md:gap-4 font-bold text-sm md:text-base">
+                <a href="#home" onclick="switchTab('home'); return false;" id="tab-btn-home" class="nav-tab px-3 py-1.5 rounded-full hover:bg-brutalistYellow border-2 border-transparent transition-all trae-browser-inspect-draggable">首页</a>
+                <a href="#about" onclick="switchTab('about'); return false;" id="tab-btn-about" class="nav-tab px-3 py-1.5 rounded-full hover:bg-brutalistCoral hover:text-white border-2 border-transparent transition-all trae-browser-inspect-draggable">关于我</a>
+                <a href="#videos" onclick="switchTab('videos'); return false;" id="tab-btn-videos" class="nav-tab px-3 py-1.5 rounded-full hover:bg-brutalistBlue hover:text-white border-2 border-transparent transition-all trae-browser-inspect-draggable">视频</a>
+                <a href="#products" onclick="switchTab('products'); return false;" id="tab-btn-products" class="nav-tab px-3 py-1.5 rounded-full hover:bg-brutalistPurple hover:text-white border-2 border-transparent transition-all trae-browser-inspect-draggable">产品</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 主体区域：包含 4 个 TAB 页面 -->
+    <main class="pt-32 pb-24 px-4 min-h-screen">
+
+        <!-- ======================= 1. 首页 TAB ======================= -->
+        <div id="tab-content-home" class="tab-content active max-w-6xl mx-auto space-y-24">
+            
+            <!-- HERO BLOCK (Replicating image_0.png) -->
+            <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center py-6">
+                <!-- 左半部：文案 -->
+                <div class="lg:col-span-7 space-y-6">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.8] tracking-tight">
+                        <span class="inline-block ml-0">我是</span><br>
+                        <span class="inline-block bg-brutalistCoral text-white border-[3px] border-black px-4 py-1 rotate-[-2deg] brutal-highlight">他律的熊猫</span>，<br>
+                        <span class="inline-block ml-4 sm:ml-6">热衷</span><span class="inline-block ml-2 mr-2 bg-brutalistPurple text-white border-[3px] border-black px-4 py-1 rotate-[2deg] brutal-highlight">底层逻辑</span>，<br>
+                        <span class="inline-block ml-2 sm:ml-4">想成为</span><span class="inline-block ml-2 mr-2 bg-brutalistBlue text-white border-[3px] border-black px-4 py-1 rotate-[-1.5deg] brutal-highlight">产品经理</span>。
+                    </h1>
+                    <p class="text-gray-700 text-lg sm:text-xl leading-relaxed max-w-xl">
+                        视频创作者 | 篮球爱好者 | 魔方er | AI探索家
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="switchTab('about')" class="brutal-btn-primary px-8 py-4 font-bold flex items-center gap-2 text-base trae-browser-inspect-draggable">
+                            <i class="fa-regular fa-paper-plane"></i> about me
+                        </button>
+                    </div>
+                </div>
+                <!-- 右半部：插画卡片 (Yellow rounded box showing creator with camera) -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="relative w-full max-w-[420px] aspect-square brutal-card bg-brutalistYellow flex items-center justify-center p-6">
+                        <img src="SVG.png" 
+                             alt="个人肖像" 
+                             class="w-full h-full max-h-[360px] object-cover rounded-2xl border-4 border-black"/>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SERVICES SECTION (Replicating image_1.png) -->
+            <section class="space-y-12">
+                <div class="text-center space-y-4">
+                    <h2 class="text-3xl sm:text-4xl font-black">
+                        一些<span class="bg-brutalistCoral text-white border-2 border-black px-4 py-1 inline-block rotate-[-1deg] brutal-highlight" style="height: 56px;">Vibe coding</span>创作
+                    </h2>
+                    <p class="text-gray-600 max-w-xl mx-auto">
+                        基于生活中的痛点与自己的探索欲，想做一些实际有用且有趣的功能
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Service Card 1 - Word Extractor -->
+                    <a href="word-extractor.html" class="brutal-card bg-white p-8 flex flex-col justify-between space-y-6 no-underline trae-browser-inspect-draggable">
+                        <div class="h-44 bg-brutalistBlue/10 border-4 border-black rounded-2xl flex items-center justify-center p-4 relative overflow-hidden">
+                            <!-- Word Extractor icon -->
+                            <svg class="w-full h-full max-h-[140px]" viewBox="0 0 200 150">
+                                <!-- Document base -->
+                                <rect x="50" y="20" width="100" height="110" rx="8" fill="#fff" stroke="#000" stroke-width="4"/>
+                                <!-- Text lines representing words -->
+                                <rect x="65" y="40" width="50" height="8" rx="2" fill="#FFD043" stroke="#000" stroke-width="2"/>
+                                <rect x="65" y="55" width="70" height="8" rx="2" fill="#FF5F7E" stroke="#000" stroke-width="2"/>
+                                <rect x="65" y="70" width="40" height="8" rx="2" fill="#10B981" stroke="#000" stroke-width="2"/>
+                                <rect x="65" y="85" width="60" height="8" rx="2" fill="#8B5CF6" stroke="#000" stroke-width="2"/>
+                                <rect x="65" y="100" width="55" height="8" rx="2" fill="#FFD043" stroke="#000" stroke-width="2"/>
+                                <!-- Extract arrow -->
+                                <path d="M130 60 L150 75 L130 90" fill="none" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                <!-- Sparkles -->
+                                <circle cx="165" cy="40" r="4" fill="#FFD043" stroke="#000" stroke-width="1"/>
+                                <path d="M165 32 L165 48 M157 40 L173 40" stroke="#000" stroke-width="2"/>
+                                <circle cx="170" cy="95" r="3" fill="#FF5F7E" stroke="#000" stroke-width="1"/>
+                                <path d="M170 88 L170 102 M163 95 L177 95" stroke="#000" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-2xl font-black">单词背背佳</h3>
+                            <p class="text-gray-600 text-sm sm:text-base">
+                                上传word、excel文件，自动提取英文单词，一键导出TXT适于导入「不背单词」并输出自制书
+                            </p>
+                        </div>
+                    </a>
+
+                    <!-- Service Card 2 -->
+                    <a href="eat-what-animation2.html" class="brutal-card bg-white p-8 flex flex-col justify-between space-y-6 no-underline trae-browser-inspect-draggable">
+                        <!-- Icon illustration frame -->
+                        <div class="h-44 bg-[#F0EFEA] border-4 border-black rounded-2xl flex items-center justify-center p-4 relative overflow-hidden">
+                            <!-- Vector representation of web screen -->
+                            <svg class="w-full h-full max-h-[140px]" viewBox="0 0 200 150">
+                                <rect x="10" y="20" width="160" height="110" rx="8" fill="#fff" stroke="#000" stroke-width="4"/>
+                                <circle cx="25" cy="35" r="5" fill="#FF5F7E" stroke="#000" stroke-width="2"/>
+                                <circle cx="38" cy="35" r="5" fill="#FFD043" stroke="#000" stroke-width="2"/>
+                                <circle cx="51" cy="35" r="5" fill="#10B981" stroke="#000" stroke-width="2"/>
+                                <rect x="25" y="55" width="80" height="8" rx="2" fill="#000"/>
+                                <rect x="25" y="70" width="60" height="6" rx="2" fill="#888"/>
+                                <rect x="25" y="82" width="70" height="6" rx="2" fill="#888"/>
+                                <rect x="115" y="55" width="45" height="45" rx="6" fill="#3B82F6" stroke="#000" stroke-width="3"/>
+                                <!-- Cursor -->
+                                <polygon points="110,105 125,120 115,125" fill="#FFD043" stroke="#000" stroke-width="3" />
+                            </svg>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-2xl font-black">等会吃啥儿</h3>
+                            <p class="text-gray-600 text-sm sm:text-base">
+                                基于地理位置服务获取周围商家，并随机提供一家"盲盒"商家
+                            </p>
+                        </div>
+                    </a>
+
+                    <!-- Service Card 3 -->
+                    <div class="brutal-card bg-white p-8 flex flex-col justify-between space-y-6">
+                        <div class="h-44 bg-[#F0EFEA] border-4 border-black rounded-2xl flex items-center justify-center p-4 relative overflow-hidden">
+                            <!-- Watch/product design representation -->
+                            <svg class="w-full h-full max-h-[140px]" viewBox="0 0 200 150">
+                                <!-- Watch strap -->
+                                <rect x="80" y="15" width="40" height="120" rx="10" fill="#000" stroke="#000" stroke-width="2"/>
+                                <rect x="85" y="20" width="30" height="110" rx="6" fill="#888"/>
+                                <!-- Watch screen -->
+                                <rect x="75" y="40" width="50" height="70" rx="14" fill="#fff" stroke="#000" stroke-width="4"/>
+                                <rect x="82" y="55" width="36" height="40" rx="6" fill="#10B981" stroke="#000" stroke-width="2"/>
+                                <circle cx="90" cy="48" r="3" fill="#FF823A"/>
+                                <!-- Ruler vector on right -->
+                                <rect x="145" y="25" width="18" height="100" rx="4" fill="#fff" stroke="#000" stroke-width="3"/>
+                                <line x1="145" y1="40" x2="155" y2="40" stroke="#000" stroke-width="2"/>
+                                <line x1="145" y1="55" x2="151" y2="55" stroke="#000" stroke-width="2"/>
+                                <line x1="145" y1="70" x2="155" y2="70" stroke="#000" stroke-width="2"/>
+                                <line x1="145" y1="85" x2="151" y2="85" stroke="#000" stroke-width="2"/>
+                                <line x1="145" y1="100" x2="155" y2="100" stroke="#000" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="space-y-3 text-center">
+                            <h3 class="text-2xl font-black opacity-40">更多作品开发中</h3>
+                            <p class="text-gray-400 text-sm sm:text-base opacity-60">
+                                coming soon...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIDEOS SECTION -->
+            <section class="space-y-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="relative">
+                        <h2 class="text-3xl sm:text-4xl font-black bg-white border-4 border-black px-6 py-2 inline-block">Videos</h2>
+                        <div class="absolute -bottom-2 -right-2 w-full h-full bg-brutalistBlue -z-10"></div>
+                    </div>
+                    <button class="font-bold text-sm flex items-center gap-2 hover:text-brutalistBlue transition-colors trae-browser-inspect-draggable">
+                        Watch all videos <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Video Card 1 -->
+                    <div class="bg-white border-4 border-black rounded-3xl overflow-hidden">
+                        <div class="h-48 bg-gray-400 relative flex items-center justify-center">
+                            <div class="text-gray-500 font-bold text-lg opacity-50">coming soon......</div>
+                        </div>
+                        <div class="p-4 space-y-3">
+                            <p class="text-gray-400 text-sm opacity-50">coming soon......</p>
+                        </div>
+                    </div>
+
+                    <!-- Video Card 2 -->
+                    <div class="bg-white border-4 border-black rounded-3xl overflow-hidden">
+                        <div class="h-48 bg-gray-400 relative flex items-center justify-center">
+                            <div class="text-gray-500 font-bold text-lg opacity-50">coming soon......</div>
+                        </div>
+                        <div class="p-4 space-y-3">
+                            <p class="text-gray-400 text-sm opacity-50">coming soon......</p>
+                        </div>
+                    </div>
+
+                    <!-- Video Card 3 -->
+                    <div class="bg-white border-4 border-black rounded-3xl overflow-hidden">
+                        <div class="h-48 bg-gray-400 relative flex items-center justify-center">
+                            <div class="text-gray-500 font-bold text-lg opacity-50">coming soon......</div>
+                        </div>
+                        <div class="p-4 space-y-3">
+                            <p class="text-gray-400 text-sm opacity-50">coming soon......</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+
+        <!-- ======================= 2. 关于我 TAB ======================= -->
+        <div id="tab-content-about" class="tab-content max-w-5xl mx-auto space-y-20">
+            
+            <!-- WHO IS BEHIND (Replicating image_2.png) -->
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- 左半部：个人介绍文案 -->
+                <div class="space-y-6">
+                    <h2 class="text-4xl sm:text-5xl font-black">
+                        Welcome to
+                    </h2>
+                    <div class="bg-brutalistBlue text-white border-[3px] border-black px-6 py-3 inline-block rotate-[-2deg] font-black text-[40px] shadow-[4px_4px_0px_0px_#000] brutal-highlight">
+                        熊猫的世界!
+                    </div>
+                    <div class="space-y-4 text-gray-700">
+                        <p class="leading-relaxed">
+                            我出生于2002年5月，在广东长大。小时候因为各种兴趣爱好想象力还不错，但随着长大逐渐被知识和现实击碎。现在重拾了这种创造力的激情，想慢慢实现自己各种各样的ideas，同时想简化自己过往经验中的流程，所以开始vibe coding！
+                        </p>
+                        <p class="leading-relaxed">
+                            目前想进军软件产品经理行业，同时也是一名up主。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 右半部：ID卡片 -->
+                <div class="flex justify-center">
+                    <div class="relative">
+                        <!-- ID卡片主体 -->
+                        <div class="bg-white border-4 border-black rounded-xl p-5 shadow-brutal-lg max-w-[260px] relative card-tilt" style="transform: rotate(-2deg);">
+                            <!-- 顶部绿色条 -->
+                            <div class="bg-brutalistGreen text-white px-4 py-3 mb-4 border-2 border-black rounded-t-lg -mt-3 -mx-5">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-black text-sm">ID CARD</span>
+                                    <span class="text-xs opacity-90">MONASH UNIVERSITY</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 卡片内容 -->
+                            <div class="space-y-3">
+                                <!-- 头像和姓名 -->
+                                <div class="flex gap-3">
+                                    <!-- 头像 -->
+                                    <div class="w-24 h-28 bg-brutalistYellow border-2 border-black rounded-lg p-1 flex-shrink-0">
+                                        <img src="SVG.png" alt="头像" class="w-full h-full object-cover rounded"/>
+                                    </div>
+                                    <!-- 姓名 -->
+                                    <div class="flex-1">
+                                        <div class="bg-brutalistYellow border-2 border-black rounded-lg p-3 h-full">
+                                            <span class="text-xs text-gray-500">NAME</span>
+                                            <div class="font-black text-lg">他律的熊猫</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 专业 -->
+                                <div class="bg-brutalistBlue/20 border-2 border-black rounded-lg p-3">
+                                    <span class="text-xs text-gray-500">MAJOR</span>
+                                    <div class="font-bold text-sm">交通运输</div>
+                                </div>
+                                
+                                <!-- 底部标签 -->
+                                <div class="flex gap-2">
+                                    <div class="bg-brutalistBlue text-white border-2 border-black rounded px-3 py-1 text-xs font-bold">
+                                        2002.05.25
+                                    </div>
+                                    <div class="bg-brutalistCoral text-white border-2 border-black rounded px-3 py-1 text-xs font-bold">
+                                        广东
+                                    </div>
+                                </div>
+                                
+                                <!-- 职位 -->
+                                <div class="bg-brutalistPurple/30 border-2 border-black rounded-lg p-3">
+                                    <span class="text-xs text-gray-500">JOB</span>
+                                    <div class="font-bold text-sm">想成为软件产品经理</div>
+                                </div>
+                                
+                                <!-- 底部ID和条形码区域 -->
+                                <div class="mt-2 pt-3 border-t-2 border-black">
+                                    <span class="text-xs text-gray-500">ID NO.</span>
+                                    <div class="font-bold text-sm">XM-20020525-petrichor</div>
+                                    <!-- 条形码 -->
+                                    <div class="mt-2 bg-white border-2 border-black rounded-lg px-4 py-2">
+                                        <div class="flex gap-0.5 justify-center">
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-1 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-1.5 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-2 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-1 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-1 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-1.5 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-2 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-1 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-1 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-1 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-1.5 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-2 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-1 h-6 bg-black"></div>
+                                            <div class="w-0.5 h-6 bg-black"></div>
+                                            <div class="w-1 h-6 bg-black"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 右上角装饰圆 - 笑脸 -->
+                        <div class="absolute -top-5 -right-5 w-14 h-14 bg-brutalistCoral rounded-full border-2 border-black flex items-center justify-center shadow-[4px_4px_0px_0px_#000]" style="transform: rotate(15deg);">
+                            <div class="text-center">
+                                <span class="text-2xl">😊</span>
+                                <div class="text-xs font-bold text-white">XMMMXOVO</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 右下角装饰圆 -->
+                        <div class="absolute -bottom-4 -right-4 w-12 h-12 bg-brutalistGreen rounded-full border-2 border-black flex items-center justify-center shadow-[4px_4px_0px_0px_#000]" style="transform: rotate(-10deg);">
+                            <span class="text-xs font-bold text-white text-center leading-tight">OFFICIAL<br/>VIBE</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EXPERIENCE SECTION - 游戏进度时间线 (Replicating image_4.png) -->
+            <section class="space-y-8">
+                <!-- 标题区域 -->
+                <div class="text-center">
+                    <h2 class="text-4xl sm:text-5xl font-black inline-block">
+                        地球Online 
+                        <span class="bg-brutalistCoral text-white border-2 border-black px-4 py-1 inline-block rotate-[1deg] ml-2 brutal-highlight" style="line-height: 64px;">开放游戏进度</span>
+                    </h2>
+                </div>
+
+                <!-- 时间线卡片容器 -->
+                <div class="bg-white border-4 border-black rounded-3xl p-6 md:p-10 shadow-brutal-lg" style="background-image: linear-gradient(to right, #e5e5e5 1px, transparent 1px), linear-gradient(to bottom, #e5e5e5 1px, transparent 1px); background-size: 20px 20px; width: 880px; margin-left: auto; margin-right: auto;">
+                    <!-- 标签栏 -->
+                    <div class="flex justify-between mb-8">
+                        <div class="bg-brutalistCoral text-white border-2 border-black px-4 py-1 rounded-lg font-bold brutal-highlight">
+                            主线任务
+                        </div>
+                        <div class="bg-brutalistGreen text-white border-2 border-black px-4 py-1 rounded-lg font-bold brutal-highlight">
+                            支线任务
+                        </div>
+                    </div>
+
+                    <!-- 时间线 -->
+                    <div class="relative">
+                        <!-- 顶部箭头 -->
+                        <div class="absolute left-1/2 -translate-x-1/2 -top-4 w-6 h-6 bg-white border-2 border-black rounded flex items-center justify-center">
+                            <i class="fa-solid fa-chevron-up text-xs"></i>
+                        </div>
+
+                        <!-- 时间线竖线 -->
+                        <div class="absolute left-1/2 -translate-x-1/2 top-2 bottom-8 w-0.5 bg-transparent border-l-2 border-dashed border-black"></div>
+
+                        <!-- 时间线节点 -->
+                        <div class="space-y-12">
+                            <!-- 2026.06 - 支线任务 -->
+                            <div class="flex items-center gap-4">
+                                <div class="hidden md:block w-1/2"></div>
+                                <div class="timeline-node absolute left-1/2 -translate-x-1/2 w-7 h-7 bg-black rounded-full border-3 border-black flex items-center justify-center">
+                                    <div class="w-4 h-4 bg-white rounded-full flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-black rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="w-full md:w-1/2 flex justify-start md:pl-[60px]">
+                                    <div class="timeline-card bg-white border-2 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_#FF5F7E]" style="width: 320px;">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-10 h-10 bg-brutalistCoral text-white border-2 border-black rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-code-compare text-sm"></i>
+                                            </span>
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <span class="bg-brutalistCoral text-white text-xs font-bold px-2 py-0.5 rounded">【支线】</span>
+                                                    <span class="text-sm font-bold">2026.06</span>
+                                                </div>
+                                                <p class="text-sm">激动地开始AI编程，上线了我的个人网站并开发落地了自己的产品</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2026.03 - 主线任务 -->
+                            <div class="flex items-center gap-4">
+                                <div class="w-full md:w-1/2 flex justify-end md:pr-[60px]">
+                                    <div class="timeline-card bg-white border-2 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_#3B82F6]" style="width: 320px;">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-10 h-10 bg-brutalistBlue text-white border-2 border-black rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-robot text-sm"></i>
+                                            </span>
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <span class="bg-brutalistBlue text-white text-xs font-bold px-2 py-0.5 rounded">【主线】</span>
+                                                    <span class="text-sm font-bold">2026.03</span>
+                                                </div>
+                                                <p class="text-sm">想成为软件产品经理，AI方向</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="timeline-node absolute left-1/2 -translate-x-1/2 w-7 h-7 bg-black rounded-full border-3 border-black flex items-center justify-center">
+                                    <div class="w-4 h-4 bg-white rounded-full flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-black rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="hidden md:block w-1/2"></div>
+                            </div>
+
+                            <!-- 2026.01 - 支线任务 -->
+                            <div class="flex items-center gap-4">
+                                <div class="hidden md:block w-1/2"></div>
+                                <div class="timeline-node absolute left-1/2 -translate-x-1/2 w-7 h-7 bg-black rounded-full border-3 border-black flex items-center justify-center">
+                                    <div class="w-4 h-4 bg-white rounded-full flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-black rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="w-full md:w-1/2 flex justify-start md:pl-[60px]">
+                                    <div class="timeline-card bg-white border-2 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_#FFD043]" style="width: 320px;">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-10 h-10 bg-brutalistYellow text-black border-2 border-black rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-coins text-sm text-white"></i>
+                                            </span>
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <span class="bg-brutalistYellow text-black text-xs font-bold px-2 py-0.5 rounded">【支线】</span>
+                                                    <span class="text-sm font-bold">2026.01</span>
+                                                </div>
+                                                <p class="text-sm">开通理财账户，但被黄金伤透了</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2025.09 - 支线任务 -->
+                            <div class="flex items-center gap-4">
+                                <div class="hidden md:block w-1/2"></div>
+                                <div class="timeline-node absolute left-1/2 -translate-x-1/2 w-7 h-7 bg-black rounded-full border-3 border-black flex items-center justify-center">
+                                    <div class="w-4 h-4 bg-white rounded-full flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-black rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="w-full md:w-1/2 flex justify-start md:pl-[60px]">
+                                    <div class="timeline-card bg-white border-2 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_#FF5F7E]" style="width: 320px;">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-10 h-10 bg-brutalistCoral text-white border-2 border-black rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <span class="text-sm" style="filter: grayscale(100%) brightness(200%);">🧠</span>
+                                            </span>
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <span class="bg-brutalistCoral text-white text-xs font-bold px-2 py-0.5 rounded">【支线】</span>
+                                                    <span class="text-sm font-bold">2025.09</span>
+                                                </div>
+                                                <p class="text-sm">对冥想开始感兴趣，探索自己大脑的“肌肉”运行逻辑</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2025.03 - 支线任务 -->
+                            <div class="flex items-center gap-4">
+                                <div class="hidden md:block w-1/2"></div>
+                                <div class="timeline-node absolute left-1/2 -translate-x-1/2 w-7 h-7 bg-black rounded-full border-3 border-black flex items-center justify-center">
+                                    <div class="w-4 h-4 bg-white rounded-full flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-black rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="w-full md:w-1/2 flex justify-start md:pl-[60px]">
+                                    <div class="timeline-card bg-white border-2 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_#3B82F6]" style="width: 320px;">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-10 h-10 bg-brutalistBlue text-white border-2 border-black rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <span class="text-sm" style="filter: grayscale(100%) brightness(200%);">💪</span>
+                                            </span>
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <span class="bg-brutalistBlue text-white text-xs font-bold px-2 py-0.5 rounded">【支线】</span>
+                                                    <span class="text-sm font-bold">2025.03</span>
+                                                </div>
+                                                <p class="text-sm">正儿八经开始研究减脂健身，成功在一个月内减重20斤</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2024.06 - 主线任务 -->
+                            <div class="flex items-center gap-4">
+                                <div class="w-full md:w-1/2 flex justify-end md:pr-[60px]">
+                                    <div class="timeline-card bg-white border-2 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_#FF5F7E]" style="width: 320px;">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-10 h-10 bg-brutalistCoral text-white border-2 border-black rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-graduation-cap text-sm"></i>
+                                            </span>
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <span class="bg-brutalistCoral text-white text-xs font-bold px-2 py-0.5 rounded">【主线】</span>
+                                                    <span class="text-sm font-bold">2024.06</span>
+                                                </div>
+                                                <p class="text-sm">本科毕业于长沙理工大学，交通运输</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="timeline-node absolute left-1/2 -translate-x-1/2 w-7 h-7 bg-black rounded-full border-3 border-black flex items-center justify-center">
+                                    <div class="w-4 h-4 bg-white rounded-full flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-black rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="hidden md:block w-1/2"></div>
+                            </div>
+
+                            <!-- 2023.06 - 主线任务 -->
+                            <div class="flex items-center gap-4">
+                                <div class="w-full md:w-1/2 flex justify-end md:pr-[60px]">
+                                    <div class="timeline-card bg-white border-2 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_#22C55E]" style="width: 320px;">
+                                        <div class="flex items-start gap-3">
+                                            <span class="w-10 h-10 bg-brutalistGreen text-white border-2 border-black rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <i class="fa-solid fa-chart-bar text-sm"></i>
+                                            </span>
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <span class="bg-brutalistGreen text-white text-xs font-bold px-2 py-0.5 rounded">【主线】</span>
+                                                    <span class="text-sm font-bold">2023.06</span>
+                                                </div>
+                                                <p class="text-sm">外企硬件产品经理助理实习</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="timeline-node absolute left-1/2 -translate-x-1/2 w-7 h-7 bg-black rounded-full border-3 border-black flex items-center justify-center">
+                                    <div class="w-4 h-4 bg-white rounded-full flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-black rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="hidden md:block w-1/2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+
+        <!-- ======================= 3. 视频 TAB ======================= -->
+        <div id="tab-content-videos" class="tab-content max-w-6xl mx-auto space-y-8">
+            
+            <!-- Header Section -->
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                <div class="space-y-4">
+                    <h2 class="text-4xl sm:text-5xl font-black">
+                        Video <span class="bg-brutalistBlue text-white border-2 border-black px-4 py-1 inline-block rotate-[1deg] shadow-[3px_3px_0px_0px_#000] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_#000] transition-all cursor-pointer trae-browser-inspect-draggable">Library</span>
+                    </h2>
+                    <p class="text-gray-600 max-w-lg trae-browser-inspect-draggable">
+                        拆解各种概念、分享稀奇古怪的经验
+                    </p>
+                    <!-- Category Tags -->
+                    <div class="flex flex-wrap gap-3">
+                        <button class="px-4 py-2 rounded-full border-2 border-black font-bold text-sm shadow-[2px_2px_0px_0px_#000] bg-brutalistCoral text-white transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_#000] trae-browser-inspect-draggable">
+                            <i class="fa-solid fa-comment"></i> 概念拆解
+                        </button>
+                        <button class="px-4 py-2 rounded-full border-2 border-black font-bold text-sm shadow-[2px_2px_0px_0px_#000] bg-white text-black hover:bg-gray-100 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_#000] transition-all trae-browser-inspect-draggable">
+                            <i class="fa-solid fa-code"></i> 经验分享
+                        </button>
+                    </div>
+                </div>
+                <!-- Search Box -->
+                <div class="lg:self-start">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索视频..." class="w-full lg:w-64 px-4 py-3 pl-10 rounded-full border-2 border-black bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brutalistBlue/30 trae-browser-inspect-draggable">
+                        <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Video Item 1 -->
+                <div class="video-item brutal-card bg-white p-5 flex flex-col justify-between space-y-4" data-category="creative">
+                    <div class="bg-gray-400 border-4 border-black rounded-xl aspect-[16/9] flex items-center justify-center overflow-hidden relative">
+                        <div class="text-gray-500 font-bold text-lg opacity-50">coming soon......</div>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-gray-400 text-sm opacity-50">coming soon......</p>
+                    </div>
+                </div>
+
+                <!-- Video Item 2 -->
+                <div class="video-item brutal-card bg-white p-5 flex flex-col justify-between space-y-4" data-category="vlog">
+                    <div class="bg-gray-400 border-4 border-black rounded-xl aspect-[16/9] flex items-center justify-center overflow-hidden relative">
+                        <div class="text-gray-500 font-bold text-lg opacity-50">coming soon......</div>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-gray-400 text-sm opacity-50">coming soon......</p>
+                    </div>
+                </div>
+
+                <!-- Video Item 3 -->
+                <div class="video-item brutal-card bg-white p-5 flex flex-col justify-between space-y-4" data-category="commercial">
+                    <div class="bg-gray-400 border-4 border-black rounded-xl aspect-[16/9] flex items-center justify-center overflow-hidden relative">
+                        <div class="text-gray-500 font-bold text-lg opacity-50">coming soon......</div>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-gray-400 text-sm opacity-50">coming soon......</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================= 4. 产品 TAB ======================= -->
+        <div id="tab-content-products" class="tab-content max-w-6xl mx-auto space-y-12">
+            
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                <div class="space-y-4">
+                    <h2 class="text-4xl sm:text-5xl font-black">
+                        Vibe <span class="bg-brutalistCoral text-white border-2 border-black px-4 py-1 inline-block rotate-[-1deg] brutal-highlight">Store</span>
+                    </h2>
+                    <p class="text-gray-600 max-w-lg">
+                        支持原创内容！购买我独家调制的视频调色 LUTS、Lightroom 预设或实体高街周边产品。
+                    </p>
+                </div>
+            </div>
+
+            <!-- Product Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Word Extractor Tool -->
+                <a href="word-extractor.html" class="brutal-card bg-white p-6 space-y-6 flex flex-col justify-between no-underline trae-browser-inspect-draggable">
+                    <div class="bg-brutalistBlue/10 border-4 border-black rounded-2xl h-56 flex items-center justify-center relative overflow-hidden">
+                        <!-- Word Extractor Icon SVG -->
+                        <svg class="w-full h-full max-h-[160px]" viewBox="0 0 200 150">
+                            <!-- Document base -->
+                            <rect x="50" y="20" width="100" height="110" rx="8" fill="#fff" stroke="#000" stroke-width="4"/>
+                            <!-- Text lines representing words -->
+                            <rect x="65" y="40" width="50" height="8" rx="2" fill="#FFD043" stroke="#000" stroke-width="2"/>
+                            <rect x="65" y="55" width="70" height="8" rx="2" fill="#FF5F7E" stroke="#000" stroke-width="2"/>
+                            <rect x="65" y="70" width="40" height="8" rx="2" fill="#10B981" stroke="#000" stroke-width="2"/>
+                            <rect x="65" y="85" width="60" height="8" rx="2" fill="#8B5CF6" stroke="#000" stroke-width="2"/>
+                            <rect x="65" y="100" width="55" height="8" rx="2" fill="#FFD043" stroke="#000" stroke-width="2"/>
+                            <!-- Extract arrow -->
+                            <path d="M130 60 L150 75 L130 90" fill="none" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                            <!-- Sparkles -->
+                            <circle cx="165" cy="40" r="4" fill="#FFD043" stroke="#000" stroke-width="1"/>
+                            <path d="M165 32 L165 48 M157 40 L173 40" stroke="#000" stroke-width="2"/>
+                            <circle cx="170" cy="95" r="3" fill="#FF5F7E" stroke="#000" stroke-width="1"/>
+                            <path d="M170 88 L170 102 M163 95 L177 95" stroke="#000" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-3">
+                        <h3 class="text-xl font-black">单词背背佳</h3>
+                        <p class="text-gray-600 text-sm">
+                            上传word、excel文件，自动提取英文单词，一键导出TXT适于导入「不背单词」并输出自制书。
+                        </p>
+                    </div>
+                </a>
+
+                <!-- 等会吃啥儿 -->
+                <a href="eat-what-animation2.html" class="brutal-card bg-white p-6 space-y-6 flex flex-col justify-between no-underline trae-browser-inspect-draggable">
+                    <div class="bg-[#F0EFEA] border-4 border-black rounded-2xl h-56 flex items-center justify-center relative overflow-hidden">
+                        <!-- Vector representation of web screen -->
+                        <svg class="w-full h-full max-h-[160px]" viewBox="0 0 200 150">
+                            <rect x="10" y="20" width="160" height="110" rx="8" fill="#fff" stroke="#000" stroke-width="4"/>
+                            <circle cx="25" cy="35" r="5" fill="#FF5F7E" stroke="#000" stroke-width="2"/>
+                            <circle cx="38" cy="35" r="5" fill="#FFD043" stroke="#000" stroke-width="2"/>
+                            <circle cx="51" cy="35" r="5" fill="#10B981" stroke="#000" stroke-width="2"/>
+                            <rect x="25" y="55" width="80" height="8" rx="2" fill="#000"/>
+                            <rect x="25" y="70" width="60" height="6" rx="2" fill="#888"/>
+                            <rect x="25" y="82" width="70" height="6" rx="2" fill="#888"/>
+                            <rect x="115" y="55" width="45" height="45" rx="6" fill="#3B82F6" stroke="#000" stroke-width="3"/>
+                            <!-- Cursor -->
+                            <polygon points="110,105 125,120 115,125" fill="#FFD043" stroke="#000" stroke-width="3" />
+                        </svg>
+                    </div>
+                    <div class="space-y-3">
+                        <h3 class="text-xl font-black">等会吃啥儿</h3>
+                        <p class="text-gray-600 text-sm">
+                            基于地理位置服务获取周围商家，并随机提供一家"盲盒"商家。
+                        </p>
+                    </div>
+                </a>
+
+                <!-- 更多作品开发中 -->
+                <div class="brutal-card bg-white p-6 space-y-6 flex flex-col justify-between">
+                    <div class="bg-[#F0EFEA] border-4 border-black rounded-2xl h-56 flex items-center justify-center relative overflow-hidden">
+                        <!-- Smartwatch and ruler icon -->
+                        <svg class="w-full h-full max-h-[160px]" viewBox="0 0 200 150">
+                            <!-- Watch strap -->
+                            <rect x="70" y="20" width="60" height="15" rx="4" fill="#444" stroke="#000" stroke-width="3"/>
+                            <rect x="70" y="115" width="60" height="15" rx="4" fill="#444" stroke="#000" stroke-width="3"/>
+                            <!-- Watch face -->
+                            <rect x="75" y="35" width="50" height="80" rx="12" fill="#fff" stroke="#000" stroke-width="4"/>
+                            <rect x="85" y="45" width="30" height="30" rx="6" fill="#10B981" stroke="#000" stroke-width="2"/>
+                            <circle cx="100" cy="60" r="4" fill="#FF5F7E" stroke="#000" stroke-width="2"/>
+                            <!-- Ruler -->
+                            <rect x="145" y="40" width="12" height="70" rx="2" fill="#fff" stroke="#000" stroke-width="3"/>
+                            <line x1="151" y1="50" x2="151" y2="60" stroke="#000" stroke-width="2"/>
+                            <line x1="151" y1="65" x2="151" y2="75" stroke="#000" stroke-width="2"/>
+                            <line x1="151" y1="80" x2="151" y2="90" stroke="#000" stroke-width="2"/>
+                            <line x1="151" y1="95" x2="151" y2="105" stroke="#000" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-3">
+                        <p class="text-gray-400 text-lg font-bold opacity-50">更多作品开发中</p>
+                        <p class="text-gray-300 text-sm opacity-50">coming soon...</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ======================= 购物车侧边滑出面板 (Neo-Brutalism Cart) ======================= -->
+    <div id="cart-drawer" class="fixed top-0 right-0 w-full sm:w-[440px] h-full bg-white border-l-[6px] border-black z-50 transform translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-[-10px_0px_0px_0px_rgba(0,0,0,1)]">
+        <!-- Drawer Header -->
+        <div class="p-6 border-b-4 border-black flex items-center justify-between bg-brutalistYellow">
+            <h2 class="text-2xl font-black flex items-center gap-2">
+                <i class="fa-solid fa-cart-shopping"></i> 我的购物车
+            </h2>
+            <button onclick="toggleCart()" class="w-10 h-10 rounded-full border-2 border-black bg-white hover:bg-brutalistCoral hover:text-white flex items-center justify-center font-bold trae-browser-inspect-draggable">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Drawer Content (List of Cart Items) -->
+        <div id="cart-items-container" class="flex-grow p-6 overflow-y-auto space-y-4">
+            <!-- Empty state (default) -->
+            <div id="cart-empty-state" class="h-full flex flex-col items-center justify-center space-y-4 text-center">
+                <span class="text-6xl text-gray-400"><i class="fa-regular fa-folder-open"></i></span>
+                <p class="text-gray-500 font-bold">购物车里空空如也，快去挑点创意好物吧！</p>
+            </div>
+            <!-- Dynamic products will be rendered here -->
+        </div>
+
+        <!-- Drawer Footer (Calculations & Checkout) -->
+        <div class="p-6 border-t-4 border-black bg-[#F0EFEA] space-y-4">
+            <div class="flex justify-between items-center font-black text-xl">
+                <span>总计费用:</span>
+                <span id="cart-total" class="text-brutalistCoral">$0.00</span>
+            </div>
+            <button onclick="simulateCheckout()" class="w-full brutal-btn-primary py-4 font-black text-lg flex items-center justify-center gap-2 trae-browser-inspect-draggable">
+                <i class="fa-regular fa-credit-card"></i> 确认结算购买
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ======================= 交互式视频播放控制台弹窗 ======================= -->
+    <div id="video-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+        <!-- Modal window shaped as brutalist retro monitor/player interface -->
+        <div class="bg-white brutal-card w-full max-w-3xl overflow-hidden flex flex-col">
+            <!-- Player bar -->
+            <div class="bg-brutalistCoral p-4 border-b-4 border-black flex items-center justify-between text-white">
+                <h3 id="video-modal-title" class="font-black text-lg text-black">Video Player Pro</h3>
+                <button onclick="closeVideoModal()" class="w-8 h-8 rounded-full border-2 border-black bg-white text-black hover:bg-brutalistYellow flex items-center justify-center font-bold trae-browser-inspect-draggable">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <!-- Video frame container -->
+            <div class="aspect-[16/9] w-full bg-black relative">
+                <iframe id="video-iframe" class="w-full h-full" src="" title="Video Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+            <!-- Custom Control elements -->
+            <div class="p-4 bg-brutalistCream border-t-4 border-black flex items-center justify-between">
+                <span class="text-xs font-bold text-gray-500"><i class="fa-solid fa-signal text-brutalistGreen"></i> Streaming Live (HD)</span>
+                <span class="text-xs font-extrabold bg-black text-white px-3 py-1.5 rounded-full">CREATOR EDITION</span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 页脚区块 -->
+    <footer class="bg-black text-white py-12 px-6 border-t-4 border-black">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <!-- Social media links with brutalist styled circular links -->
+            <div class="flex gap-4">
+                <a href="#" class="px-3 py-2 rounded-full bg-white text-black border-2 border-black hover:bg-gray-900 hover:text-white transition-all font-bold text-sm trae-browser-inspect-draggable">抖音</a>
+                <a href="#" class="px-3 py-2 rounded-full bg-white text-black border-2 border-black hover:bg-[#FF2442] hover:text-white transition-all font-bold text-sm trae-browser-inspect-draggable">小红书</a>
+                <a href="#" class="px-3 py-2 rounded-full bg-white text-black border-2 border-black hover:bg-[#FB7299] hover:text-white transition-all font-bold text-sm trae-browser-inspect-draggable">b站</a>
+                <a href="#" class="px-3 py-2 rounded-full bg-white text-black border-2 border-black hover:bg-[#07C160] hover:text-white transition-all font-bold text-sm trae-browser-inspect-draggable">公众号</a>
+            </div>
+            <p class="text-gray-500 text-sm font-bold">Copyright © 2026 The Vibe-coded Portfolio. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <!-- ======================= 客户端逻辑 (JS STATE MANAGEMENT) ======================= -->
+    <script>
+        // State for managing shopping cart
+        let cart = [];
+
+        // Switching tabs dynamically
+        function switchTab(tabId) {
+            // Update URL hash
+            history.pushState({ tab: tabId }, '', `#${tabId}`);
+            
+            // Hide all tab content
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Show active tab
+            document.getElementById(`tab-content-${tabId}`).classList.add('active');
+
+            // Reset navigation links styling
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.className = "nav-tab px-3 py-1.5 rounded-full border-2 border-transparent transition-all font-bold text-sm md:text-base";
+            });
+
+            // Set specific styling for active tab button
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            if(tabId === 'home') {
+                activeBtn.className = "nav-tab active-tab px-3 py-1.5 rounded-full border-2 border-black bg-brutalistYellow text-black transition-all font-bold text-sm md:text-base shadow-[3px_3px_0px_0px_#000]";
+            } else if (tabId === 'about') {
+                activeBtn.className = "nav-tab active-tab px-3 py-1.5 rounded-full border-2 border-black bg-brutalistCoral text-white transition-all font-bold text-sm md:text-base shadow-[3px_3px_0px_0px_#000]";
+            } else if (tabId === 'videos') {
+                activeBtn.className = "nav-tab active-tab px-3 py-1.5 rounded-full border-2 border-black bg-brutalistBlue text-white transition-all font-bold text-sm md:text-base shadow-[3px_3px_0px_0px_#000]";
+            } else if (tabId === 'products') {
+                activeBtn.className = "nav-tab active-tab px-3 py-1.5 rounded-full border-2 border-black bg-brutalistPurple text-white transition-all font-bold text-sm md:text-base shadow-[3px_3px_0px_0px_#000]";
+            }
+
+            // Scroll top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Handle browser back/forward
+        window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.tab) {
+                switchTab(e.state.tab);
+            }
+        });
+
+        // Initialize home tab active on boot
+        document.addEventListener("DOMContentLoaded", () => {
+            // Check URL hash for initial tab
+            const hash = window.location.hash.slice(1) || 'home';
+            switchTab(hash);
+            renderCart();
+            selectExperience(1);
+        });
+
+        // Toggle Cart Drawer
+        function toggleCart() {
+            const drawer = document.getElementById('cart-drawer');
+            drawer.classList.toggle('translate-x-full');
+        }
+
+        // Add Product To Cart
+        function addToCart(id, name, price) {
+            // Check if product already in cart
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ id, name, price, quantity: 1 });
+            }
+            renderCart();
+            // Open cart drawer to show items added
+            toggleCart();
+        }
+
+        // Remove item or decrement quantity in cart
+        function updateItemQuantity(id, change) {
+            const item = cart.find(item => item.id === id);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(item => item.id !== id);
+                }
+            }
+            renderCart();
+        }
+
+        // Render Cart UI Elements
+        function renderCart() {
+            const cartItemsContainer = document.getElementById('cart-items-container');
+            const cartEmptyState = document.getElementById('cart-empty-state');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotal = document.getElementById('cart-total');
+
+            // Render Cart item badge count - check if element exists first
+            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+            if (cartCount) {
+                cartCount.innerText = totalItems;
+            }
+
+            if (cart.length === 0) {
+                if (cartEmptyState) {
+                    cartEmptyState.style.display = 'flex';
+                }
+                // Clear out dynamic content except the empty state
+                const itemsList = document.querySelectorAll('.cart-dynamic-item');
+                itemsList.forEach(item => item.remove());
+                if (cartTotal) {
+                    cartTotal.innerText = "$0.00";
+                }
+                return;
+            }
+
+            if (cartEmptyState) {
+                cartEmptyState.style.display = 'none';
+            }
+
+            // Clear old dynamic elements
+            const oldItems = document.querySelectorAll('.cart-dynamic-item');
+            oldItems.forEach(item => item.remove());
+
+            let subtotal = 0;
+
+            // Build item nodes
+            cart.forEach(item => {
+                const itemCost = item.price * item.quantity;
+                subtotal += itemCost;
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-dynamic-item flex items-center justify-between border-3 border-black p-4 rounded-xl bg-white shadow-brutal';
+                itemDiv.innerHTML = `
+                    <div class="space-y-1">
+                        <h4 class="font-extrabold text-sm text-black">${item.name}</h4>
+                        <p class="text-xs text-brutalistCoral font-bold">$${item.price.toFixed(2)} x ${item.quantity}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="updateItemQuantity(${item.id}, -1)" class="w-8 h-8 rounded-full border border-black bg-white hover:bg-gray-100 flex items-center justify-center font-bold text-xs trae-browser-inspect-draggable">-</button>
+                        <span class="w-8 text-center font-bold">${item.quantity}</span>
+                        <button onclick="updateItemQuantity(${item.id}, 1)" class="w-8 h-8 rounded-full border border-black bg-white hover:bg-gray-100 flex items-center justify-center font-bold text-xs trae-browser-inspect-draggable">+</button>
+                    </div>
+                `;
+                if (cartItemsContainer) {
+                    cartItemsContainer.appendChild(itemDiv);
+                }
+            });
+
+            if (cartTotal) {
+                cartTotal.innerText = `$${subtotal.toFixed(2)}`;
+            }
+        }
+
+        // Simulated Checkout Animation Flow
+        function simulateCheckout() {
+            if (cart.length === 0) {
+                alert("购物车内没有任何产品！");
+                return;
+            }
+            alert("正在生成加密账单... 支付完成！感谢支持创作者产品！🎉");
+            cart = [];
+            renderCart();
+            toggleCart();
+        }
+
+        // Active experience selector mapping
+        const experienceDetails = {
+            1: {
+                tag: 'Fulltime',
+                date: 'Jan 2023 - Present',
+                title: 'Mobile Product Designer',
+                company: 'Studio Creative Corp',
+                desc: 'Vel facilisis volutpat est velit egestas dui. Urna nec cidu praesent semper feugiat. Vulputate ut pharetra sit. Lead design architecture of core video application with 10M+ active users.',
+                bullets: [
+                    'Redesigned onboarding flow (+40% conversion)',
+                    'Established atomic design system with Figma'
+                ],
+                shadowColor: '#3B82F6'
+            },
+            2: {
+                tag: 'Agency',
+                date: 'Jan 2021 - Dec 2022',
+                title: 'VP of Design',
+                company: 'Invision Agency',
+                desc: 'Aliquam vel arcu vel risus convallis varius non sed aliquam. Leading a team of 15 senior digital art directors, screenwriters, and video editors delivering high tier commercial brand products.',
+                bullets: [
+                    'Delivered campaigns for Apple, Airbnb, and Nike',
+                    'Spearheaded workflow automation tools (+25% speed)'
+                ],
+                shadowColor: '#FF5F7E'
+            },
+            3: {
+                tag: 'Contract',
+                date: 'Mar 2020 - Dec 2020',
+                title: 'Head of Product Design',
+                company: 'Pixel Wizards Studio',
+                desc: 'Nunc hendrerit drogon nunc scelerisque nisl pellentesque et dignissim at aenean tempor adipiscing eget mi diam at tempus. Direct production of digital interactive screens for virtual conferences.',
+                bullets: [
+                    'Grew customer base from 10k to 1M users in 9 months',
+                    'Atheletic clothing launch visual layout design'
+                ],
+                shadowColor: '#FFD043'
+            }
+        };
+
+        function selectExperience(index) {
+            // Remove active style from all job cards
+            document.querySelectorAll('.job-card').forEach(card => {
+                card.className = "job-card bg-white text-black border-4 border-black p-6 rounded-2xl shadow-[4px_4px_0px_0px_#000] cursor-pointer hover:-translate-y-1 transition-all flex items-center justify-between";
+            });
+
+            // Set specific active shadow
+            const activeCard = document.getElementById(`exp-card-${index}`);
+            const data = experienceDetails[index];
+            activeCard.className = `job-card bg-white text-black border-4 border-black p-6 rounded-2xl cursor-pointer hover:-translate-y-1 transition-all flex items-center justify-between shadow-[6px_6px_0px_0px_${data.shadowColor}]`;
+
+            // Fill left panel content
+            document.getElementById('exp-detail-tag').innerText = data.tag;
+            document.getElementById('exp-detail-date').innerText = data.date;
+            document.getElementById('exp-detail-title').innerText = data.title;
+            document.getElementById('exp-detail-company').innerText = data.company;
+            document.getElementById('exp-detail-desc').innerText = data.desc;
+
+            // Fill bullet nodes
+            const bulletsContainer = document.getElementById('exp-detail-bullets');
+            bulletsContainer.innerHTML = '';
+            data.bullets.forEach(bullet => {
+                const li = document.createElement('li');
+                li.className = "flex items-center gap-2";
+                li.innerHTML = `<i class="fa-solid fa-circle-check text-brutalistGreen"></i> ${bullet}`;
+                bulletsContainer.appendChild(li);
+            });
+
+            // Transition Left Detail Container Shadow Color
+            const detailPanel = document.getElementById('experience-detail-panel');
+            detailPanel.style.boxShadow = `6px 6px 0px 0px ${data.shadowColor}`;
+        }
+
+        // Filtering videos by category
+        function filterVideos(category) {
+            // Update filter buttons UI
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = "filter-btn px-5 py-2.5 rounded-full border-2 border-black font-bold text-sm shadow-[2px_2px_0px_0px_#000] bg-white text-black hover:bg-[#F0EFEA] transition-all";
+            });
+
+            // Highlight selected button with yellow theme
+            const activeBtn = event.currentTarget;
+            activeBtn.className = "filter-btn active px-5 py-2.5 rounded-full border-2 border-black font-bold text-sm shadow-[2px_2px_0px_0px_#000] bg-brutalistYellow text-black transition-all";
+
+            // Hide/Show Video items
+            document.querySelectorAll('.video-item').forEach(item => {
+                if (category === 'all' || item.getAttribute('data-category') === category) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Open custom brutalist video player
+        function openVideoModal(url, title) {
+            const modal = document.getElementById('video-modal');
+            const iframe = document.getElementById('video-iframe');
+            const modalTitle = document.getElementById('video-modal-title');
+
+            modalTitle.innerText = title;
+            iframe.src = url;
+            modal.classList.remove('hidden');
+        }
+
+        // Close video player modal
+        function closeVideoModal() {
+            const modal = document.getElementById('video-modal');
+            const iframe = document.getElementById('video-iframe');
+
+            iframe.src = '';
+            modal.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

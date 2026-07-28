@@ -1,0 +1,40 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Node modules
+node_modules/
+.npm/
+
+# IDE
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Cache and temp
+edge_user_data/
+.pai/
+*.log
+
+# Build outputs
+dist/
+build/
+
+# Data files
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!project.config.json
+
+# Text files (optional - uncomment if needed)
+# *.txt
+# *.md
+
+# Cookies
+*cookies*.txt

@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>今天想吃点什么呢？</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - HarmonyOS Sans 替代方案 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- 高德地图 JS API -->
+    <script type="text/javascript">
+        window._AMapSecurityConfig = {
+            securityJsCode: '83654985f8f0edadc7f390a3b4f440a6',
+        }
+    </script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=0bcf4a088cd6d0b92a0de24fa04cd625&plugin=AMap.PlaceSearch,AMap.AutoComplete,AMap.Geocoder,AMap.Geolocation"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cream-bg': '#FFF9F0',
+                        'soft-peach': '#FF8B7B',
+                        'warm-coral': '#FF6B5A',
+                        'butter-yellow': '#FFC947',
+                        'sage-green': '#5FB372',
+                        'soft-gray': '#666666',
+                    },
+                    fontFamily: {
+                        'sans': ['"Noto Sans SC"', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #FFF8E7;
+            font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+        }
+        .search-input {
+            border: 2px solid #E8E8E8;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #FFB5A0;
+            box-shadow: 0 4px 16px rgba(255, 181, 160, 0.15);
+        }
+        
+        .amap-sug-result {
+            display: none !important;
+        }
+        
+        .custom-suggestions {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            width: 460px;
+            max-width: 100%;
+            background-color: white;
+            border: 2px solid rgba(255, 181, 160, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(255, 139, 123, 0.12);
+            z-index: 1000;
+            max-height: 300px;
+            overflow: hidden;
+            display: flex;
+        }
+        
+        .suggestions-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .suggestions-content::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .suggestions-content {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .custom-scrollbar {
+            width: 10px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .scrollbar-thumb {
+            position: absolute;
+            left: 0;
+            width: 10px;
+            background-color: #FFB5A0;
+            border: none;
+            border-radius: 8px;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+        
+        .scrollbar-thumb:hover {
+            background-color: #FF8B7B;
+        }
+        
+        .scrollbar-thumb:active {
+            cursor: grabbing;
+        }
+        
+        .custom-suggestions .suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #F5F5F5;
+            transition: background-color 0.2s;
+        }
+        
+        .custom-suggestions .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .custom-suggestions .suggestion-item:hover {
+            background-color: rgba(255, 181, 160, 0.08);
+        }
+        
+        .custom-suggestions .suggestion-item.active {
+            background-color: rgba(255, 181, 160, 0.15);
+        }
+        
+        .custom-suggestions .suggestion-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 2px;
+        }
+        
+        .custom-suggestions .suggestion-address {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        @media (max-width: 640px) {
+            .custom-suggestions {
+                width: 100%;
+                max-height: 40vh;
+            }
+            
+            .custom-scrollbar {
+                width: 6px;
+            }
+            
+            .scrollbar-thumb {
+                width: 6px;
+            }
+        }
+        .btn-radius {
+            border: 2px solid #E8E8E8;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 0 #D4D4D4, 0 6px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.15s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px !important;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-radius:hover {
+            border-color: #FF8B7B;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #D4D4D4, 0 8px 16px rgba(0, 0, 0, 0.15);
+            background-color: rgba(255, 139, 123, 0.05);
+        }
+        .btn-radius:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #D4D4D4, 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-radius:focus {
+            outline: none;
+            border-color: #FF8B7B;
+            box-shadow: 0 4px 0 #D4D4D4, 0 6px 12px rgba(255, 139, 123, 0.2);
+        }
+        /* 美化 select 下拉选项 */
+        .btn-radius option {
+            background-color: white;
+            color: #333;
+            padding: 12px;
+            font-weight: 500;
+        }
+        .btn-radius option:checked {
+            background-color: #FFC947;
+            color: white;
+            font-weight: 700;
+        }
+        .btn-radius option:hover {
+            background-color: #FFF8E7;
+        }
+        
+        /* 加载动画方案1：简单开屏动画 */
+        .splash-screen-1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FFF8E7 0%, #FFE8D0 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeOut 0.5s ease 1.5s forwards;
+        }
+        
+        .splash-logo {
+            font-size: 80px;
+            animation: bounce 1s ease-in-out;
+        }
+        
+        .splash-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-top: 20px;
+            animation: fadeInUp 0.6s ease 0.3s backwards;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+        
+        /* 加载动画方案2：元素逐个飞入 */
+        .splash-screen-2 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #FFF8E7;
+            z-index: 9999;
+            animation: slideUp 0.6s ease 2s forwards;
+        }
+        
+        @keyframes slideUp {
+            to {
+                transform: translateY(-100%);
+            }
+        }
+        
+        .animate-fly-in {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .fly-in-1 { animation: flyIn 0.6s ease 0.2s forwards; }
+        .fly-in-2 { animation: flyIn 0.6s ease 0.3s forwards; }
+        .fly-in-3 { animation: flyIn 0.6s ease 0.4s forwards; }
+        .fly-in-4 { animation: flyIn 0.6s ease 0.5s forwards; }
+        .fly-in-5 { animation: flyIn 0.6s ease 0.6s forwards; }
+        
+        @keyframes flyIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .btn-search {
+            border: none;
+            background-color: #5FB372;
+            color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 0 #4A9A5E, 0 6px 12px rgba(95, 179, 114, 0.3);
+            transition: all 0.15s ease;
+        }
+        .btn-search:hover {
+            transform: translateY(-2px);
+            background-color: #52A564;
+            box-shadow: 0 6px 0 #4A9A5E, 0 8px 16px rgba(95, 179, 114, 0.4);
+        }
+        .btn-search:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #4A9A5E, 0 4px 8px rgba(95, 179, 114, 0.3);
+        }
+        .btn-category {
+            border: 2px solid #E8E8E8;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 0 #D4D4D4, 0 6px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.15s ease;
+            color: #666;
+            font-weight: 600;
+        }
+        .btn-category.active {
+            background-color: #FFC947;
+            border-color: #FF8B7B;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 0 #E5B333, 0 6px 12px rgba(255, 201, 71, 0.4);
+        }
+        .btn-category:hover {
+            border-color: #FF8B7B;
+            background-color: rgba(255, 139, 123, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #D4D4D4, 0 8px 16px rgba(0, 0, 0, 0.12);
+        }
+        .btn-category:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #D4D4D4, 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+        .btn-random {
+            border: none;
+            background-color: #FF6347;
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 6px 0 #D9432E, 0 8px 16px rgba(255, 99, 71, 0.5);
+            transition: all 0.15s ease;
+            font-weight: 700;
+        }
+        .btn-random:hover {
+            transform: translateY(-2px);
+            background-color: #FF4D2E;
+            box-shadow: 0 8px 0 #D9432E, 0 10px 20px rgba(255, 99, 71, 0.6);
+        }
+        .btn-random:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #D9432E, 0 5px 12px rgba(255, 99, 71, 0.5);
+        }
+        .btn-random:disabled {
+            background-color: #FFB5A0;
+            box-shadow: 0 4px 0 #E89A85, 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .btn-locate {
+            border: 2px solid #E8E8E8;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease;
+        }
+        .btn-locate:hover {
+            border-color: #FFB5A0;
+            box-shadow: 0 4px 12px rgba(255, 181, 160, 0.15);
+        }
+        .restaurant-card {
+            background-color: white;
+            border: 3px solid #FF8B7B;
+            border-radius: 20px;
+            box-shadow: 0 4px 0 #E56B5A, 0 6px 12px rgba(255, 107, 90, 0.3);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .restaurant-card:hover {
+            transform: translateY(-3px);
+            border-color: #FF6347;
+            box-shadow: 0 6px 0 #D9432E, 0 10px 20px rgba(255, 99, 71, 0.4);
+        }
+        .restaurant-card:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 0 #E56B5A, 0 4px 10px rgba(255, 107, 90, 0.3);
+        }
+        .restaurant-card.selected {
+            border: 3px solid #FFC947;
+            background-color: #FFFBF0;
+            box-shadow: 0 4px 0 #E5B333, 0 6px 12px rgba(255, 201, 71, 0.5);
+        }
+        .restaurant-card.random-selected {
+            border: 4px solid #FF6347;
+            background-color: #FFF5F0;
+            box-shadow: 0 0 0 4px rgba(255, 99, 71, 0.3), 0 6px 0 #D9432E, 0 10px 20px rgba(255, 99, 71, 0.6);
+            transform: scale(1.05);
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .restaurant-card.final-pulse-twice {
+            animation: pulse-scale-twice 0.6s ease-in-out;
+        }
+        @keyframes pulse-scale-twice {
+            0% {
+                transform: scale(1.05);
+            }
+            25% {
+                transform: scale(1.12);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            75% {
+                transform: scale(1.12);
+            }
+            100% {
+                transform: scale(1.05);
+            }
+        }
+        .error-box {
+            background-color: #FFF0F0;
+            border: 2px solid #FFB3B3;
+            border-radius: 16px;
+        }
+        .empty-state {
+            border: 2px dashed #E8E8E8;
+            border-radius: 24px;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            padding: 12px 24px;
+            border-radius: 16px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- 加载动画方案1：简单开屏动画（默认显示，可注释掉） -->
+    <!-- <div class="splash-screen-1" id="splash-1">
+        <div class="splash-logo">🍜</div>
+        <div class="splash-text">等会儿吃啥？</div>
+    </div> -->
+    
+    <!-- 加载动画方案2：元素逐个飞入（默认隐藏，取消注释即可使用） -->
+    <div class="splash-screen-2" id="splash-2"></div>
+    
+    <!-- 主内容区域 - 方案2时初始隐藏 -->
+    <div id="main-content" style="display: none;">
+    
+    <!-- 标题区域 -->
+    <header class="text-center py-8 px-4 relative overflow-hidden animate-fly-in fly-in-1">
+        <!-- 装饰性漂浮元素 -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 100%; pointer-events: none; opacity: 0.15;">
+            <span style="position: absolute; top: 20%; left: 10%; font-size: 48px; animation: float 6s ease-in-out infinite;">🍜</span>
+            <span style="position: absolute; top: 30%; right: 15%; font-size: 48px; animation: float 6s ease-in-out infinite 2s;">🍕</span>
+            <span style="position: absolute; top: 60%; left: 20%; font-size: 48px; animation: float 6s ease-in-out infinite 4s;">🍱</span>
+        </div>
+        
+        <style>
+            @keyframes float {
+                0%, 100% { transform: translateY(0px) rotate(0deg); }
+                50% { transform: translateY(-20px) rotate(5deg); }
+            }
+        </style>
+        
+        <div style="position: relative; z-index: 1;">
+            <h1 style="font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 700; line-height: 1.2; margin-bottom: 16px; color: #333; letter-spacing: -0.02em;">
+                今天想吃点什么呢<span style="color: #FF8B7B; font-size: 1.1em;">?</span>
+            </h1>
+            <p style="font-size: 1.125rem; color: #666; font-weight: 500; margin-bottom: 24px;">
+                让我帮你选一个 <span style="font-size: 1.25rem;">✨</span>
+            </p>
+            
+            <!-- 统计信息 -->
+            <div style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: rgba(255, 139, 123, 0.1); border: 2px solid rgba(255, 139, 123, 0.3); border-radius: 100px; font-size: 0.875rem; color: #666;">
+                <span style="font-size: 1.25rem;">🎯</span>
+                已帮助 <strong style="color: #FF8B7B; margin: 0 4px;">1,234</strong> 人做出选择
+            </div>
+        </div>
+    </header>
+
+    <!-- 主体内容 -->
+    <main class="max-w-2xl mx-auto px-4 pb-24">
+        <!-- 搜索区域 -->
+        <div class="space-y-4">
+            <!-- 搜索框 -->
+            <div class="flex flex-wrap gap-3">
+                <div class="flex-1 min-w-[200px] relative">
+                    <input 
+                        type="text" 
+                        id="address-input" 
+                        placeholder="广东省深圳市福田区福田街道福华一路深圳国际商会大厦" 
+                        class="search-input w-full px-4 py-3 pl-10 rounded-xl bg-white text-base"
+                        style="font-size: 18px;"
+                    >
+                    <button 
+                        id="locate-icon"
+                        onclick="getCurrentLocation()"
+                        class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-orange-500 cursor-pointer transition-colors"
+                    >
+                        <i class="fa-solid fa-map-marker-alt"></i>
+                    </button>
+                    <div id="custom-suggestions" class="custom-suggestions hidden">
+                        <div id="suggestions-content" class="suggestions-content"></div>
+                        <div id="custom-scrollbar" class="custom-scrollbar hidden">
+                            <div id="scrollbar-thumb" class="scrollbar-thumb"></div>
+                        </div>
+                    </div>
+                </div>
+                <select id="radius-select" onchange="onRadiusChange()" class="btn-radius px-4 py-3 font-bold text-sm whitespace-nowrap">
+                    <option value="200">200m</option>
+                    <option value="500">500m</option>
+                    <option value="1000">1km</option>
+                    <option value="2000">2km</option>
+                </select>
+                <button 
+                    id="search-btn"
+                    onclick="searchRestaurants()" 
+                    class="btn-search px-5 py-3 font-bold flex items-center justify-center gap-1 whitespace-nowrap"
+                >
+                    <i class="fa-solid fa-search"></i>
+                </button>
+            </div>
+            
+            <!-- 分类标签 -->
+            <div class="flex gap-3">
+                <button 
+                    id="category-food" 
+                    onclick="setCategory('food')" 
+                    class="btn-category active px-5 py-2 font-bold text-sm"
+                >
+                    主食
+                </button>
+                <button 
+                    id="category-dessert" 
+                    onclick="setCategory('dessert')" 
+                    class="btn-category px-5 py-2 font-bold text-sm"
+                >
+                    甜点
+                </button>
+                <button 
+                    id="category-drink" 
+                    onclick="setCategory('drink')" 
+                    class="btn-category px-5 py-2 font-bold text-sm"
+                >
+                    饮品
+                </button>
+            </div>
+            
+            <!-- 搜索结果信息 -->
+            <div class="flex justify-between items-center text-sm text-gray-600">
+                <span id="result-count">输入地址开始搜索</span>
+            </div>
+        </div>
+
+        <!-- 错误提示 -->
+        <div id="error-message" class="hidden mt-4 error-box p-3">
+            <div class="flex items-center gap-2 text-red-700 font-bold text-sm">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>获取周边餐厅失败，请重试。</span>
+            </div>
+        </div>
+
+        <!-- 餐厅列表区域 -->
+        <div id="restaurant-container" class="mt-6">
+            <div id="empty-state" class="empty-state p-12 text-center">
+                <div class="text-6xl mb-4">🍴</div>
+                <p style="color: #8B8B8B; font-weight: 500; font-size: 1rem;">告诉我你在哪，我来帮你找 😊</p>
+            </div>
+            
+            <!-- 餐厅列表 -->
+            <div id="restaurant-list" class="hidden grid grid-cols-2 gap-3">
+                <!-- 餐厅卡片将动态生成 -->
+            </div>
+            
+            <!-- 加载状态 -->
+            <div id="loading-state" class="hidden text-center py-8">
+                <i class="fa-solid fa-spinner loading-spinner text-4xl" style="color: #FF8B7B;"></i>
+                <p class="mt-4 font-bold" style="color: #8B8B8B;">正在为你寻找美食...</p>
+            </div>
+        </div>
+
+        <!-- 弹窗遮罩层 -->
+        <div id="modal-overlay" class="fixed inset-0 bg-black/50 z-50 hidden" onclick="closeModal()"></div>
+        
+        <!-- 餐厅详情弹窗 -->
+        <div id="restaurant-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+            <div class="modal-content bg-white rounded-2xl border-4 border-orange-500 max-w-sm w-full overflow-hidden shadow-2xl">
+                <!-- 关闭按钮 -->
+                <button onclick="closeModal()" class="close-btn absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-black text-white hover:bg-gray-800 transition-colors z-10">
+                    <i class="fa-solid fa-x"></i>
+                </button>
+                
+                <!-- 餐厅图片 -->
+                <div class="relative">
+                    <img id="modal-image" src="" alt="餐厅图片" class="w-full h-48 object-cover" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27300%27 height=%27150%27 viewBox=%270 0 300 150%27%3E%3Crect fill=%27%23e5e7eb%27 width=%27300%27 height=%27150%27/%3E%3Ctext fill=%27%239ca3af%27 font-family=%27sans-serif%27 font-size=%2714%27 x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E%E6%9A%82%E6%97%A0%E5%9B%BE%E7%89%87%3C/text%3E%3C/svg%3E'">
+                    <!-- 命中注定标签 -->
+                    <div id="modal-distance" class="absolute top-3 left-3 bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-bold">
+                        命中注定 (67m)
+                    </div>
+                </div>
+                
+                <!-- 餐厅信息 -->
+                <div class="p-4">
+                    <!-- 名称和评分 -->
+                    <div class="flex items-center gap-2 mb-3">
+                        <h3 id="modal-name" class="text-xl font-black"></h3>
+                        <span id="modal-rating" class="flex items-center gap-1 text-yellow-500">
+                            <i class="fa-solid fa-star"></i>
+                            <span id="modal-rating-value"></span>
+                        </span>
+                    </div>
+                    
+                    <!-- 地址 -->
+                    <div class="flex items-start gap-2 mb-4">
+                        <i class="fa-solid fa-map-marker-alt text-orange-500 mt-0.5"></i>
+                        <p id="modal-address" class="text-gray-600 text-sm"></p>
+                    </div>
+                    
+                    <!-- 按钮组 -->
+                    <div class="flex gap-3">
+                        <button onclick="navigateFromModal()" class="flex-1 bg-black text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-navigation"></i>
+                            <span>导航过去</span>
+                        </button>
+                        <button onclick="closeModal(); randomSelectRestaurant()" class="w-14 bg-yellow-400 rounded-xl flex items-center justify-center hover:bg-yellow-300 transition-colors" style="background: linear-gradient(135deg, #FFE5B4, #FFD4A0);">
+                            <i class="fa-solid fa-refresh text-black"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 固定底部的随机选择按钮 -->
+        <div id="random-btn-container" class="fixed bottom-0 left-0 right-0 z-50 p-2 bg-transparent">
+            <div class="max-w-2xl mx-auto">
+                <button 
+                    id="random-btn"
+                    onclick="randomSelectRestaurant()" 
+                    disabled
+                    class="btn-random w-full py-3 font-bold text-lg rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    随机选一个！
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript逻辑 -->
+    <script>
+        let currentLocation = null;
+        let restaurants = [];
+        let selectedRestaurant = null;
+        let currentCategory = 'food';
+        let currentPage = 1;
+        let totalCount = 0;
+        let searchRadius = 200;
+        let autoComplete = null;
+        let placeSearch = null;
+        let geocoder = null;
+        let geolocation = null;
+        let isRandomSelecting = false;
+        let isLoadingAll = false;
+        let suggestions = [];
+        let suggestionIndex = -1;
+        let debounceTimer = null;
+        let searchDebounceTimer = null; // 搜索防抖计时器
+        let hoverDebounceTimer = null; // 鼠标悬停防抖计时器
+
+        function debounce(func, delay) {
+            return function(...args) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+        
+        // 搜索防抖函数 - 800ms延迟
+        function debounceSearch(func, delay = 800) {
+            return function(...args) {
+                clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+        
+        // 鼠标悬停防抖函数 - 600ms延迟
+        function debounceHover(func, delay = 600) {
+            return function(...args) {
+                clearTimeout(hoverDebounceTimer);
+                hoverDebounceTimer = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        function initMap() {
+            geocoder = new AMap.Geocoder({
+                city: '全国',
+                radius: 1000
+            });
+            
+            autoComplete = new AMap.AutoComplete({
+                input: 'address-input'
+            });
+            
+            const addressInput = document.getElementById('address-input');
+            
+            addressInput.addEventListener('input', debounce(function(e) {
+                const value = e.target.value.trim();
+                if (value.length > 0) {
+                    searchSuggestions(value);
+                } else {
+                    hideSuggestions();
+                }
+            }, 300));
+            
+            // 鼠标移入时添加防抖，延迟600ms才显示建议
+            addressInput.addEventListener('mouseenter', debounceHover(function() {
+                const value = this.value.trim();
+                if (value.length > 0) {
+                    searchSuggestions(value);
+                }
+            }));
+            
+            // 鼠标移出时取消防抖计时器
+            addressInput.addEventListener('mouseleave', function() {
+                clearTimeout(hoverDebounceTimer);
+            });
+            
+            addressInput.addEventListener('focus', function() {
+                const value = this.value.trim();
+                if (value.length > 0) {
+                    searchSuggestions(value);
+                }
+            });
+            
+            addressInput.addEventListener('keydown', function(e) {
+                handleKeydown(e);
+            });
+            
+            document.addEventListener('click', function(e) {
+                const suggestionsContainer = document.getElementById('custom-suggestions');
+                const addressInput = document.getElementById('address-input');
+                if (!suggestionsContainer.contains(e.target) && !addressInput.contains(e.target)) {
+                    hideSuggestions();
+                }
+            });
+            
+            placeSearch = new AMap.PlaceSearch({
+                pageSize: 20,
+                pageIndex: 1,
+                extensions: 'all'
+            });
+
+            geolocation = new AMap.Geolocation({
+                enableHighAccuracy: true,
+                timeout: 15000,
+                showButton: false,
+                showMarker: false,
+                showCircle: false,
+                panToLocation: false,
+                zoomToAccuracy: false
+            });
+
+            autoComplete.on('select', function(e) {
+                if (e.poi && e.poi.location) {
+                    currentLocation = {
+                        lng: e.poi.location.lng,
+                        lat: e.poi.location.lat,
+                        name: e.poi.name
+                    };
+                    enableSearchButton();
+                    showToast('位置已选择', 'success');
+                    hideSuggestions();
+                }
+            });
+
+            document.getElementById('address-input').addEventListener('input', function(e) {
+                const address = e.target.value.trim();
+                if (address.length > 0) {
+                    enableSearchButton();
+                }
+            });
+        }
+
+        function searchSuggestions(keyword) {
+            if (!autoComplete) return;
+            
+            autoComplete.search(keyword, function(status, result) {
+                if (status === 'complete' && result.tips) {
+                    suggestions = result.tips;
+                    showSuggestions(result.tips);
+                }
+            });
+        }
+
+        function showSuggestions(tips) {
+            const container = document.getElementById('custom-suggestions');
+            const content = document.getElementById('suggestions-content');
+            const scrollbar = document.getElementById('custom-scrollbar');
+            
+            if (!tips || tips.length === 0) {
+                hideSuggestions();
+                return;
+            }
+            
+            const filteredTips = tips.filter(tip => {
+                const hasLocation = tip.location && tip.location.lng && tip.location.lat;
+                const hasProvince = !!tip.province;
+                const hasCity = !!tip.city;
+                const hasDistrict = !!tip.district;
+                const hasAddress = !!tip.address;
+                
+                return hasLocation && (hasProvince || hasCity || hasDistrict || hasAddress);
+            });
+            
+            if (filteredTips.length === 0) {
+                hideSuggestions();
+                return;
+            }
+            
+            suggestions = filteredTips;
+            content.innerHTML = '';
+            
+            filteredTips.forEach((tip, index) => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.dataset.index = index;
+                
+                const name = tip.name || '';
+                const fullAddress = [tip.province, tip.city, tip.district, tip.address].filter(Boolean).join('');
+                
+                item.innerHTML = `
+                    <div class="suggestion-name">${name}</div>
+                    <div class="suggestion-address">${fullAddress}</div>
+                `;
+                
+                item.addEventListener('click', function() {
+                    selectSuggestion(index);
+                });
+                
+                item.addEventListener('mouseenter', function() {
+                    suggestionIndex = index;
+                    updateActiveSuggestion();
+                });
+                
+                content.appendChild(item);
+            });
+            
+            container.classList.remove('hidden');
+            suggestionIndex = -1;
+            initScrollbar();
+        }
+
+        let isDragging = false;
+        let startY = 0;
+        let startTop = 0;
+        
+        function initScrollbar() {
+            const content = document.getElementById('suggestions-content');
+            const scrollbar = document.getElementById('custom-scrollbar');
+            const thumb = document.getElementById('scrollbar-thumb');
+            
+            const scrollHeight = content.scrollHeight;
+            const clientHeight = content.clientHeight;
+            
+            if (scrollHeight <= clientHeight) {
+                scrollbar.classList.add('hidden');
+                return;
+            }
+            
+            scrollbar.classList.remove('hidden');
+            
+            const thumbHeight = (clientHeight / scrollHeight) * clientHeight;
+            thumb.style.height = Math.max(thumbHeight, 40) + 'px';
+            
+            content.removeEventListener('scroll', handleScroll);
+            content.addEventListener('scroll', handleScroll);
+            
+            thumb.removeEventListener('mousedown', handleDragStart);
+            thumb.addEventListener('mousedown', handleDragStart);
+            
+            handleScroll();
+        }
+        
+        function handleScroll() {
+            const content = document.getElementById('suggestions-content');
+            const thumb = document.getElementById('scrollbar-thumb');
+            const scrollbar = document.getElementById('custom-scrollbar');
+            
+            if (!content || !thumb || !scrollbar) return;
+            
+            const scrollHeight = content.scrollHeight;
+            const clientHeight = content.clientHeight;
+            const scrollTop = content.scrollTop;
+            
+            const maxScroll = scrollHeight - clientHeight;
+            const maxThumbTop = scrollbar.clientHeight - thumb.offsetHeight;
+            
+            const thumbTop = (scrollTop / maxScroll) * maxThumbTop;
+            thumb.style.top = thumbTop + 'px';
+        }
+        
+        function handleDragStart(e) {
+            e.preventDefault();
+            isDragging = true;
+            startY = e.clientY;
+            startTop = parseFloat(document.getElementById('scrollbar-thumb').style.top) || 0;
+            
+            document.addEventListener('mousemove', handleDragMove);
+            document.addEventListener('mouseup', handleDragEnd);
+        }
+        
+        function handleDragMove(e) {
+            if (!isDragging) return;
+            
+            const content = document.getElementById('suggestions-content');
+            const scrollbar = document.getElementById('custom-scrollbar');
+            const thumb = document.getElementById('scrollbar-thumb');
+            
+            const deltaY = e.clientY - startY;
+            const maxThumbTop = scrollbar.clientHeight - thumb.offsetHeight;
+            const maxScroll = content.scrollHeight - content.clientHeight;
+            
+            let newTop = startTop + deltaY;
+            newTop = Math.max(0, Math.min(newTop, maxThumbTop));
+            
+            thumb.style.top = newTop + 'px';
+            
+            const scrollTop = (newTop / maxThumbTop) * maxScroll;
+            content.scrollTop = scrollTop;
+        }
+        
+        function handleDragEnd() {
+            isDragging = false;
+            document.removeEventListener('mousemove', handleDragMove);
+            document.removeEventListener('mouseup', handleDragEnd);
+        }
+
+        function hideSuggestions() {
+            const container = document.getElementById('custom-suggestions');
+            container.classList.add('hidden');
+            suggestions = [];
+            suggestionIndex = -1;
+        }
+
+        function selectSuggestion(index) {
+            const tip = suggestions[index];
+            if (tip && tip.location) {
+                currentLocation = {
+                    lng: tip.location.lng,
+                    lat: tip.location.lat,
+                    name: tip.name
+                };
+                
+                document.getElementById('address-input').value = tip.name;
+                enableSearchButton();
+                showToast('位置已选择', 'success');
+                hideSuggestions();
+            }
+        }
+
+        function handleKeydown(e) {
+            const container = document.getElementById('custom-suggestions');
+            
+            if (container.classList.contains('hidden') || suggestions.length === 0) {
+                return;
+            }
+            
+            switch (e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    suggestionIndex = (suggestionIndex + 1) % suggestions.length;
+                    updateActiveSuggestion();
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    suggestionIndex = (suggestionIndex - 1 + suggestions.length) % suggestions.length;
+                    updateActiveSuggestion();
+                    break;
+                case 'Enter':
+                    e.preventDefault();
+                    if (suggestionIndex >= 0) {
+                        selectSuggestion(suggestionIndex);
+                    }
+                    break;
+                case 'Escape':
+                    hideSuggestions();
+                    break;
+            }
+        }
+
+        function updateActiveSuggestion() {
+            const items = document.querySelectorAll('.suggestion-item');
+            items.forEach((item, index) => {
+                if (index === suggestionIndex) {
+                    item.classList.add('active');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // 距离切换时自动刷新搜索（添加防抖）
+        function onRadiusChange() {
+            if (isRandomSelecting) {
+                return;
+            }
+            
+            searchRadius = parseInt(document.getElementById('radius-select').value);
+            
+            // 如果已有位置信息,使用防抖自动重新搜索
+            if (currentLocation) {
+                showToast(`正在调整搜索范围为 ${searchRadius < 1000 ? searchRadius + 'm' : (searchRadius/1000) + 'km'}...`, 'info');
+                debounceSearch(() => {
+                    searchRestaurants();
+                })();
+            }
+        }
+
+        function setCategory(category) {
+            if (isRandomSelecting) {
+                return;
+            }
+            
+            currentCategory = category;
+            
+            document.querySelectorAll('.btn-category').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`category-${category}`).classList.add('active');
+            
+            if (currentLocation) {
+                searchRestaurants();
+            }
+        }
+
+        function getCurrentLocation() {
+            const locateIcon = document.getElementById('locate-icon');
+            locateIcon.innerHTML = '<i class="fa-solid fa-spinner loading-spinner"></i>';
+
+            if (!navigator.geolocation) {
+                showToast('您的浏览器不支持定位功能', 'error');
+                locateIcon.innerHTML = '<i class="fa-solid fa-map-marker-alt"></i>';
+                useMockLocation();
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    currentLocation = {
+                        lng: position.coords.longitude,
+                        lat: position.coords.latitude,
+                        name: ''
+                    };
+                    
+                    if (geocoder) {
+                        geocoder.getAddress([position.coords.longitude, position.coords.latitude], function(status, result) {
+                            if (status === 'complete' && result.regeocode) {
+                                currentLocation.name = result.regeocode.formattedAddress;
+                                document.getElementById('address-input').value = currentLocation.name;
+                            } else {
+                                currentLocation.name = `纬度: ${position.coords.latitude.toFixed(4)}, 经度: ${position.coords.longitude.toFixed(4)}`;
+                                document.getElementById('address-input').value = currentLocation.name;
+                            }
+                            locateIcon.innerHTML = '<i class="fa-solid fa-map-marker-alt"></i>';
+                            searchRestaurants();
+                            showToast('定位成功！', 'success');
+                        });
+                    } else {
+                        currentLocation.name = `纬度: ${position.coords.latitude.toFixed(4)}, 经度: ${position.coords.longitude.toFixed(4)}`;
+                        document.getElementById('address-input').value = currentLocation.name;
+                        locateIcon.innerHTML = '<i class="fa-solid fa-map-marker-alt"></i>';
+                        searchRestaurants();
+                        showToast('定位成功！', 'success');
+                    }
+                },
+                function(error) {
+                    locateIcon.innerHTML = '<i class="fa-solid fa-map-marker-alt"></i>';
+                    useMockLocation();
+                },
+                {
+                    enableHighAccuracy: false,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        function useMockLocation() {
+            const mockAddress = '深圳市福田区国际商会大厦A座';
+            
+            if (geocoder) {
+                geocoder.getLocation(mockAddress, function(status, result) {
+                    if (status === 'complete' && result.geocodes.length > 0) {
+                        const location = result.geocodes[0].location;
+                        currentLocation = {
+                            lng: location.lng,
+                            lat: location.lat,
+                            name: result.geocodes[0].formattedAddress || mockAddress
+                        };
+                        document.getElementById('address-input').value = currentLocation.name;
+                        searchRestaurants();
+                        showToast('使用模拟位置：' + mockAddress, 'info');
+                    } else {
+                        setDefaultLocation();
+                    }
+                });
+            } else {
+                setDefaultLocation();
+            }
+        }
+
+        function setDefaultLocation() {
+            currentLocation = {
+                lng: 114.0598,
+                lat: 22.5431,
+                name: '深圳市福田区国际商会大厦A座'
+            };
+            document.getElementById('address-input').value = currentLocation.name;
+            searchRestaurants();
+            showToast('使用预设位置：深圳市福田区国际商会大厦A座', 'info');
+        }
+
+        function searchRestaurants() {
+            if (isRandomSelecting) {
+                return;
+            }
+            
+            const address = document.getElementById('address-input').value.trim();
+            
+            if (!address && !currentLocation) {
+                showToast('请输入地址', 'error');
+                return;
+            }
+
+            searchRadius = parseInt(document.getElementById('radius-select').value);
+            currentPage = 1;
+            
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('restaurant-list').classList.add('hidden');
+            document.getElementById('error-message').classList.add('hidden');
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('random-btn').disabled = true;
+            document.getElementById('result-count').textContent = '正在全力为你寻找...';
+
+            const searchKeyword = {
+                food: '餐厅',
+                dessert: '甜点',
+                drink: '饮品'
+            }[currentCategory] || '餐厅';
+
+            if (currentLocation) {
+                searchNearby(currentLocation, searchRadius, searchKeyword, 1);
+            } else {
+                geocoder.getLocation(address, function(status, result) {
+                    if (status === 'complete' && result.geocodes.length > 0) {
+                        const location = result.geocodes[0].location;
+                        currentLocation = {
+                            lng: location.lng,
+                            lat: location.lat,
+                            name: result.geocodes[0].formattedAddress || address
+                        };
+                        searchNearby(currentLocation, searchRadius, searchKeyword, 1);
+                    } else {
+                        document.getElementById('loading-state').classList.add('hidden');
+                        document.getElementById('error-message').classList.remove('hidden');
+                        showToast('未找到该地址', 'error');
+                    }
+                });
+            }
+        }
+
+        function sortByDistance(restaurantList) {
+            return [...restaurantList].sort((a, b) => {
+                const distA = a.distance || Infinity;
+                const distB = b.distance || Infinity;
+                return distA - distB;
+            });
+        }
+        
+        // 去重函数 - 根据餐厅ID去重
+        function deduplicateRestaurants(restaurantList) {
+            const seen = new Map();
+            const unique = [];
+            
+            for (const restaurant of restaurantList) {
+                // 使用餐厅ID作为唯一标识，如果没有ID则使用name+address组合
+                const key = restaurant.id || `${restaurant.name}_${restaurant.address}`;
+                
+                if (!seen.has(key)) {
+                    seen.set(key, true);
+                    unique.push(restaurant);
+                }
+            }
+            
+            return unique;
+        }
+
+        function searchNearby(location, radius, keyword, page) {
+            placeSearch.pageIndex = page;
+            placeSearch.searchNearBy(keyword, [location.lng, location.lat], radius, function(status, result) {
+                document.getElementById('loading-state').classList.add('hidden');
+                
+                if (status === 'complete' && result.poiList && result.poiList.pois.length > 0) {
+                    totalCount = result.poiList.count;
+                    
+                    if (page === 1) {
+                        restaurants = sortByDistance(result.poiList.pois);
+                        restaurants = deduplicateRestaurants(restaurants); // 去重
+                        isLoadingAll = true;
+                    } else {
+                        const combined = restaurants.concat(result.poiList.pois);
+                        restaurants = sortByDistance(combined);
+                        restaurants = deduplicateRestaurants(restaurants); // 去重
+                    }
+                    
+                    displayRestaurants(restaurants);
+                    document.getElementById('restaurant-list').classList.remove('hidden');
+                    document.getElementById('random-btn').disabled = false;
+                    
+                    if (page === 1) {
+                        const totalPages = Math.ceil(totalCount / 20);
+                        if (totalPages > 1) {
+                            loadAllPages(2, totalPages, location, radius, keyword);
+                        } else {
+                            isLoadingAll = false;
+                            updateResultCount();
+                            showResultToast(keyword);
+                        }
+                    }
+                } else if (page === 1) {
+                    document.getElementById('empty-state').classList.remove('hidden');
+                    document.getElementById('result-count').textContent = '附近没有找到餐厅';
+                    showToast('附近没有找到餐厅', 'warning');
+                }
+            });
+        }
+        
+        function showResultToast(keyword) {
+            const categoryText = {
+                food: '主食餐厅',
+                dessert: '甜品店',
+                drink: '饮品店'
+            }[currentCategory] || keyword;
+            showToast(`为你找到了 ${restaurants.length} 家不错的选择`, 'success');
+        }
+        
+        function loadAllPages(currentPage, totalPages, location, radius, keyword) {
+            if (currentPage > totalPages) {
+                isLoadingAll = false;
+                updateResultCount();
+                showResultToast(keyword);
+                return;
+            }
+            
+            setTimeout(() => {
+                placeSearch.pageIndex = currentPage;
+                placeSearch.searchNearBy(keyword, [location.lng, location.lat], radius, function(status, result) {
+                    if (status === 'complete' && result.poiList && result.poiList.pois.length > 0) {
+                        const combined = restaurants.concat(result.poiList.pois);
+                        restaurants = sortByDistance(combined);
+                        restaurants = deduplicateRestaurants(restaurants); // 去重
+                        displayRestaurants(restaurants);
+                        loadAllPages(currentPage + 1, totalPages, location, radius, keyword);
+                    } else {
+                        isLoadingAll = false;
+                        updateResultCount();
+                        showResultToast(keyword);
+                    }
+                });
+            }, 500);
+        }
+
+        function loadMoreRestaurants() {
+            if (restaurants.length >= totalCount) {
+                return;
+            }
+            
+            currentPage++;
+            const searchKeyword = {
+                food: '餐厅',
+                dessert: '甜点',
+                drink: '饮品'
+            }[currentCategory] || '餐厅';
+            
+            document.getElementById('loading-more').classList.remove('hidden');
+            
+            searchNearby(currentLocation, searchRadius, searchKeyword, currentPage);
+        }
+
+        function updateResultCount() {
+            const categoryText = {
+                food: '主食餐厅',
+                dessert: '甜品店',
+                drink: '饮品店'
+            }[currentCategory] || '餐厅';
+            document.getElementById('result-count').textContent = `已找到附近 ${restaurants.length} 家${categoryText}`;
+        }
+
+        function displayRestaurants(allRestaurants) {
+            const container = document.getElementById('restaurant-list');
+            
+            container.innerHTML = '';
+            
+            allRestaurants.forEach((restaurant, index) => {
+                const card = document.createElement('div');
+                card.className = 'restaurant-card p-4 fade-in';
+                card.id = `restaurant-${index}`;
+                card.onclick = function() {
+                    selectRestaurant(index);
+                };
+
+                const name = restaurant.name || '未知餐厅';
+                const rating = restaurant.poiExtension && restaurant.poiExtension.rating ? restaurant.poiExtension.rating : '';
+                const distance = restaurant.distance ? `${restaurant.distance}m` : '';
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-black text-lg">${name}</h4>
+                                ${rating ? `<span class="flex items-center gap-1 text-yellow-500 text-sm">
+                                    <i class="fa-solid fa-star"></i>${rating}
+                                </span>` : ''}
+                            </div>
+                        </div>
+                        ${distance ? `<span class="text-sm font-bold text-gray-500">${distance}</span>` : ''}
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function getDistance(restaurant) {
+            if (restaurant.distance) {
+                if (restaurant.distance < 1000) {
+                    return restaurant.distance + 'm';
+                } else {
+                    return (restaurant.distance / 1000).toFixed(1) + 'km';
+                }
+            }
+            return '未知';
+        }
+
+        function selectRestaurant(index) {
+            selectedRestaurant = restaurants[index];
+            openModal(selectedRestaurant);
+        }
+
+        function customEase(t) {
+            const k = 2.04;
+            return 1 - Math.pow(1 - t, k);
+        }
+
+        function randomSelectRestaurant() {
+            if (restaurants.length === 0 || isRandomSelecting) {
+                if (restaurants.length === 0) {
+                    showToast('没有可选择的餐厅', 'error');
+                }
+                return;
+            }
+
+            document.querySelectorAll('.restaurant-card').forEach(card => {
+                card.classList.remove('random-selected', 'final-pulse-twice');
+            });
+
+            isRandomSelecting = true;
+            const btn = document.getElementById('random-btn');
+            btn.disabled = true;
+            setButtonsDisabled(true);
+
+            // ⚠️ 严格5秒计时 ⚠️
+            const TOTAL_TIME = 5000;        // 总时间: 5秒
+            const FINAL_CARD_TIME = 900;    // 最后卡片停留时间: 0.9秒
+
+            const totalRestaurants = restaurants.length;
+            const totalSteps = Math.min(totalRestaurants * 2, 30);
+            
+            // 预先生成随机顺序（前totalSteps-1步）
+            const randomOrder = [];
+            for (let i = 0; i < totalSteps - 1; i++) {
+                randomOrder.push(Math.floor(Math.random() * totalRestaurants));
+            }
+            const finalIndex = Math.floor(Math.random() * totalRestaurants);
+
+            let previousCard = null;
+            let startTime = null;
+            let animationId = null;
+            let pulseAdded = false;
+            let finalCardShown = false;
+
+            function animate(timestamp) {
+                if (!startTime) startTime = timestamp;
+                
+                const elapsed = timestamp - startTime;
+                
+                if (elapsed >= TOTAL_TIME) {
+                    // 动画结束，打开弹窗
+                    selectedRestaurant = restaurants[finalIndex];
+                    openModal(selectedRestaurant);
+                    showToast('就是这个！命运为你选择了这家 🍜', 'success');
+                    btn.disabled = false;
+                    setButtonsDisabled(false);
+                    isRandomSelecting = false;
+                    
+                    const finalCard = document.getElementById(`restaurant-${finalIndex}`);
+                    if (finalCard) {
+                        finalCard.classList.remove('final-pulse-twice');
+                    }
+                    return;
+                }
+                
+                const progress = elapsed / TOTAL_TIME;
+                const easedProgress = customEase(progress);
+                
+                // 根据进度计算当前步骤
+                // 最后一步固定在第totalSteps步（索引totalSteps-1），对应最后0.9秒
+                const currentStep = Math.min(
+                    Math.floor(easedProgress * totalSteps),
+                    totalSteps - 1
+                );
+                
+                if (currentStep === totalSteps - 1) {
+                    // 最后一步：显示最终卡片（0.9秒）
+                    if (!finalCardShown) {
+                        if (previousCard) {
+                            previousCard.classList.remove('random-selected');
+                        }
+                        const finalCard = document.getElementById(`restaurant-${finalIndex}`);
+                        if (finalCard) {
+                            finalCard.classList.add('random-selected');
+                            previousCard = finalCard;
+                        }
+                        finalCardShown = true;
+                    }
+                    
+                    // 在最后0.9秒内：0.2s停留 + 0.5s缩放 + 0.2s停留
+                    const finalProgress = (elapsed - (TOTAL_TIME - FINAL_CARD_TIME)) / FINAL_CARD_TIME;
+                    
+                    if (finalProgress > 0.2 / 0.9 && finalProgress <= (0.2 + 0.5) / 0.9) {
+                        // 缩放阶段（0.5秒）
+                        const finalCard = document.getElementById(`restaurant-${finalIndex}`);
+                        if (finalCard && !finalCard.classList.contains('final-pulse-twice')) {
+                            finalCard.classList.add('final-pulse-twice');
+                        }
+                    }
+                    
+                } else {
+                    // 前totalSteps-1步：显示随机卡片
+                    const cardIndex = randomOrder[currentStep];
+                    
+                    if (previousCard) {
+                        previousCard.classList.remove('random-selected');
+                    }
+                    
+                    const currentCard = document.getElementById(`restaurant-${cardIndex}`);
+                    if (currentCard) {
+                        currentCard.classList.add('random-selected');
+                        previousCard = currentCard;
+                    }
+                }
+                
+                animationId = requestAnimationFrame(animate);
+            }
+
+            // 开始动画
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        function setButtonsDisabled(disabled) {
+            const buttons = [
+                'category-food',
+                'category-dessert',
+                'category-drink',
+                'radius-select',
+                'search-btn',
+                'locate-icon'
+            ];
+            
+            buttons.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.disabled = disabled;
+                    if (disabled) {
+                        el.classList.add('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        el.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                }
+            });
+        }
+
+        function openModal(restaurant) {
+            // 设置弹窗内容
+            document.getElementById('modal-name').textContent = restaurant.name || '未知餐厅';
+            document.getElementById('modal-address').textContent = restaurant.address || '地址未知';
+            
+            // 设置距离
+            const distance = getDistance(restaurant);
+            document.getElementById('modal-distance').textContent = `命中注定 (${distance})`;
+            
+            // 设置评分
+            const rating = restaurant.poiExtension && restaurant.poiExtension.rating ? restaurant.poiExtension.rating : '';
+            const ratingElement = document.getElementById('modal-rating');
+            const ratingValue = document.getElementById('modal-rating-value');
+            
+            if (rating) {
+                ratingElement.classList.remove('hidden');
+                ratingValue.textContent = rating;
+            } else {
+                ratingElement.classList.add('hidden');
+            }
+            
+            // 设置图片 - 修复路径问题
+            let imageUrl = '';
+            
+            // 尝试多种方式获取图片
+            if (restaurant.photos && restaurant.photos.length > 0) {
+                imageUrl = restaurant.photos[0].url || restaurant.photos[0];
+            } else if (restaurant.poiExtension && restaurant.poiExtension.images && restaurant.poiExtension.images.length > 0) {
+                imageUrl = restaurant.poiExtension.images[0];
+            } else if (restaurant.image) {
+                imageUrl = restaurant.image;
+            }
+            
+            const imageElement = document.getElementById('modal-image');
+            
+            // 修复图片URL
+            function fixImageUrl(url) {
+                if (!url) return '';
+                
+                // 如果是相对路径，添加高德地图域名
+                if (url.startsWith('//')) {
+                    return 'https:' + url;
+                } else if (url.startsWith('/')) {
+                    return 'https://restapi.amap.com' + url;
+                } else if (!url.startsWith('http')) {
+                    return 'https://' + url;
+                }
+                
+                // 如果是http，改为https
+                if (url.startsWith('http://')) {
+                    return url.replace('http://', 'https://');
+                }
+                
+                return url;
+            }
+            
+            if (imageUrl) {
+                const fixedUrl = fixImageUrl(imageUrl);
+                imageElement.src = fixedUrl;
+                
+                // 图片加载失败时使用占位图
+                imageElement.onerror = function() {
+                    this.src = 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27300%27 height=%27150%27 viewBox=%270 0 300 150%27%3E%3Crect fill=%27%23FFF8E7%27 width=%27300%27 height=%27150%27/%3E%3Ctext fill=%27%23FF8B7B%27 font-family=%27sans-serif%27 font-size=%2740%27 x=%2750%25%27 y=%2745%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E🍽️%3C/text%3E%3Ctext fill=%27%23999%27 font-family=%27sans-serif%27 font-size=%2712%27 x=%2750%25%27 y=%2770%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E暂无图片%3C/text%3E%3C/svg%3E';
+                    this.onerror = null; // 防止无限循环
+                };
+            } else {
+                // 没有图片，使用美化的占位图
+                imageElement.src = 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27300%27 height=%27150%27 viewBox=%270 0 300 150%27%3E%3Crect fill=%27%23FFF8E7%27 width=%27300%27 height=%27150%27/%3E%3Ctext fill=%27%23FF8B7B%27 font-family=%27sans-serif%27 font-size=%2740%27 x=%2750%25%27 y=%2745%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E🍽️%3C/text%3E%3Ctext fill=%27%23999%27 font-family=%27sans-serif%27 font-size=%2712%27 x=%2750%25%27 y=%2770%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E暂无图片%3C/text%3E%3C/svg%3E';
+            }
+            
+            // 显示弹窗（淡入效果）
+            document.getElementById('modal-overlay').classList.remove('hidden');
+            document.getElementById('restaurant-modal').classList.remove('hidden');
+            
+            // 添加动画类
+            setTimeout(() => {
+                document.getElementById('modal-overlay').classList.add('fade-in');
+                document.getElementById('restaurant-modal').classList.add('fade-in');
+            }, 10);
+        }
+
+        function closeModal() {
+            // 移除动画类（淡出效果）
+            document.getElementById('modal-overlay').classList.remove('fade-in');
+            document.getElementById('restaurant-modal').classList.remove('fade-in');
+            
+            // 延迟隐藏
+            setTimeout(() => {
+                document.getElementById('modal-overlay').classList.add('hidden');
+                document.getElementById('restaurant-modal').classList.add('hidden');
+            }, 300);
+        }
+
+        function navigateFromModal() {
+            navigateToRestaurant();
+        }
+
+        function navigateToRestaurant() {
+            if (!selectedRestaurant) {
+                showToast('请先选择餐厅', 'error');
+                return;
+            }
+
+            const url = `https://uri.amap.com/navigation?to=${selectedRestaurant.location.lng},${selectedRestaurant.location.lat},${selectedRestaurant.name}&mode=car&coordinate=gaode`;
+            window.open(url, '_blank');
+        }
+
+        function enableSearchButton() {
+            document.getElementById('random-btn').disabled = false;
+        }
+
+        function showToast(message, type = 'info') {
+            const existingToast = document.querySelector('.toast-notification');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+
+            const styles = {
+                success: 'bg-sage-green text-white',
+                error: 'bg-red-500 text-white',
+                warning: 'text-black',
+                info: 'text-white'
+            };
+            
+            // 使用内联样式实现更好的颜色控制
+            const bgColors = {
+                success: '#A8C69F',
+                error: '#EF4444',
+                warning: '#FFE5B4',
+                info: '#FFB5A0'
+            };
+
+            toast.className += ` ${styles[type] || styles.info}`;
+            toast.style.backgroundColor = bgColors[type] || bgColors.info;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, -20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        window.onload = function() {
+            initMap();
+            
+            // 使用默认地址自动搜索
+            const defaultAddress = '深圳市福田区国际商会大厦A座';
+            document.getElementById('address-input').value = defaultAddress;
+            setTimeout(() => {
+                searchRestaurants();
+            }, 500);
+            
+            // 添加无限滚动监听
+            window.addEventListener('scroll', function() {
+                const scrollTop = window.scrollY;
+                const windowHeight = window.innerHeight;
+                const documentHeight = document.documentElement.scrollHeight;
+                
+                // 当滚动到距离底部100px时自动加载更多
+                if (scrollTop + windowHeight >= documentHeight - 100) {
+                    loadMoreRestaurants();
+                }
+            });
+            
+            // 方案2的飞入动画：移除splash-screen后启动元素动画
+            setTimeout(() => {
+                const splash2 = document.getElementById('splash-2');
+                if (splash2 && !splash2.classList.contains('hidden')) {
+                    // 如果方案2被启用，等splash屏幕滑走后才显示内容
+                    setTimeout(() => {
+                        document.getElementById('main-content').style.display = 'block';
+                    }, 2100);
+                }
+            }, 100);
+        };
+    </script>
+</body>
+</html>
